@@ -49,11 +49,45 @@ window.PharmaRouter = (() => {
         }
       },
     },
+    '/reminder-cards': {
+      title: 'Reminder Cards — Farlex PharmaFlow',
+      render: (el) => {
+        if (window.PharmaReminderCard) {
+          window.PharmaReminderCard.mount(el);
+        } else {
+          el.innerHTML = `
+            <div class="pf-card p-4">
+              <h4 class="fw-bold mb-2">Reminder Cards</h4>
+              <p class="text-muted mb-0">Reminder Card builder module is being initialized.</p>
+            </div>`;
+        }
+      },
+    },
+    '/custom-reminder-cards': {
+      title: 'Custom Reminder Cards — Farlex PharmaFlow',
+      render: (el) => {
+        if (window.PharmaReminderCard) {
+          window.PharmaReminderCard.mount(el);
+        } else {
+          el.innerHTML = `
+            <div class="pf-card p-4">
+              <h4 class="fw-bold mb-2">Custom Reminder Cards</h4>
+              <p class="text-muted mb-0">Custom Reminder Card builder module is being initialized.</p>
+            </div>`;
+        }
+      },
+    },
   };
 
   function getRoutePath() {
+    const hash = window.location.hash || '';
+    if (hash.startsWith('#/')) {
+      let hPath = hash.slice(1);
+      if (hPath.length > 1 && hPath.endsWith('/')) hPath = hPath.slice(0, -1);
+      return hPath || '/';
+    }
+
     let path = window.location.pathname || '/';
-    // If served under a subfolder like /PHARMA-FLOW/public/products, strip base if needed
     path = path.replace(/^\/PHARMA-FLOW\/public(?=\/|$)/i, '') || '/';
     if (!path.startsWith('/')) path = `/${path}`;
     if (path.length > 1 && path.endsWith('/')) path = path.slice(0, -1);
@@ -97,10 +131,9 @@ window.PharmaRouter = (() => {
     document.title = `${niceName || 'Section'} — PharmaFlow`;
     viewEl.innerHTML = `
       <div class="pf-card p-4">
-        <span class="badge bg-light text-dark border mb-2">Route: ${path}</span>
-        <h4 class="fw-bold mb-2">${niceName}</h4>
-        <p class="text-muted mb-3">This section is routed and ready for full feature implementation in the next steps.</p>
-        <a href="/downloads" data-link class="btn btn-outline-primary btn-sm">Go to Downloads</a>
+        <h4 class="fw-bold mb-2">${niceName || 'Section'}</h4>
+        <p class="text-muted mb-3">This section is ready for full implementation.</p>
+        <a href="/products" data-link class="btn btn-outline-primary btn-sm">Browse Products</a>
       </div>`;
   }
 
@@ -125,10 +158,12 @@ window.PharmaRouter = (() => {
         navigateTo(href);
       }
     });
-
+    window.addEventListener('hashchange', resolve);
     window.addEventListener('popstate', resolve);
     resolve();
   }
 
   return { init, navigateTo };
 })();
+
+window.PharmaRouter.init();

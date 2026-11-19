@@ -105,10 +105,10 @@ declare(strict_types=1);
 
       <!-- Main Dynamic Content -->
       <main class="pf-main flex-grow-1 p-3 p-md-4">
-        <div id="pfAlertBanner" class="alert alert-info py-2 px-3 small mb-3 d-flex align-items-center justify-content-between" role="alert">
+        <!-- <div id="pfAlertBanner" class="alert alert-info py-2 px-3 small mb-3 d-flex align-items-center justify-content-between" role="alert">
           <span><strong>Farlex Pharmaceuticals Pvt. Ltd.</strong> — Local Replica Mode (`www.farlex.in` • Panchkula, Haryana).</span>
           <button type="button" class="btn-close btn-sm" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
+        </div> -->
 
         <div id="app-view"></div>
       </main>
