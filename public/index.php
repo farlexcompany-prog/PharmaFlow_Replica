@@ -10,6 +10,9 @@ declare(strict_types=1);
   <link rel="stylesheet" href="assets/vendor/bootstrap/css/bootstrap.min.css">
   <link rel="stylesheet" href="assets/vendor/icons/bootstrap-icons.min.css">
   <link rel="stylesheet" href="assets/css/app.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
   <div class="pf-shell" id="pfShell">
@@ -120,5 +123,6 @@ declare(strict_types=1);
   <script src="assets/js/app.js"></script>
   <script src="assets/js/customer_login.js"></script>
   <script src="assets/js/contact.js"></script>
+  <script src="assets/js/products.js"></script>
 </body>
 </html>
