@@ -1,0 +1,11 @@
+# Local OS / Editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Optional: agar vendor bootstrap local rakhna hai toh is line ko hata dein
+# public/assets/vendor/
+
+# Local environment / temporary uploads if needed
+*.log
