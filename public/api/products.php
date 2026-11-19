@@ -21,7 +21,6 @@ try {
         ]
     );
 
-    // Fetch all segments for filter dropdown/chips
     $segments = $pdo->query("
         SELECT s.id, s.name, COUNT(ps.product_id) AS product_count
         FROM segments s
@@ -30,8 +29,9 @@ try {
         ORDER BY s.name ASC
     ")->fetchAll();
 
-    // Filters & pagination
-    $search    = trim((string)($_GET['search'] ?? ''));
+    // Support both ?search= and ?q=
+    $rawSearch = $_GET['search'] ?? ($_GET['q'] ?? '');
+    $search    = trim((string)$rawSearch);
     $segmentId = isset($_GET['segment_id']) && $_GET['segment_id'] !== '' ? (int)$_GET['segment_id'] : 0;
     $page      = max(1, (int)($_GET['page'] ?? 1));
     $perPage   = min(48, max(6, (int)($_GET['per_page'] ?? 12)));
@@ -41,7 +41,16 @@ try {
     $params = [];
 
     if ($search !== '') {
-        $where[] = "(p.name LIKE :search OR p.composition LIKE :search OR p.packing LIKE :search)";
+        $where[] = "(
+            p.name LIKE :search
+            OR p.composition LIKE :search
+            OR p.packing LIKE :search
+            OR EXISTS (
+                SELECT 1 FROM product_segments ps2
+                JOIN segments s2 ON s2.id = ps2.segment_id
+                WHERE ps2.product_id = p.id AND s2.name LIKE :search
+            )
+        )";
         $params[':search'] = '%' . $search . '%';
     }
 
@@ -55,12 +64,13 @@ try {
 
     $whereSql = $where ? ('WHERE ' . implode(' AND ', $where)) : '';
 
-    // Total matching products
     $countStmt = $pdo->prepare("SELECT COUNT(*) FROM products p $whereSql");
-    $countStmt->execute($params);
+    foreach ($params as $key => $val) {
+        $countStmt->bindValue($key, $val, PDO::PARAM_STR);
+    }
+    $countStmt->execute();
     $total = (int)$countStmt->fetchColumn();
 
-    // Fetch products + primary segment name
     $sql = "
         SELECT
             p.id,
@@ -89,7 +99,7 @@ try {
 
     $stmt = $pdo->prepare($sql);
     foreach ($params as $key => $val) {
-        $stmt->bindValue($key, $val);
+        $stmt->bindValue($key, $val, PDO::PARAM_STR);
     }
     $stmt->bindValue(':limit', $perPage, PDO::PARAM_INT);
     $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
@@ -99,6 +109,7 @@ try {
 
     echo json_encode([
         'ok'          => true,
+        'search'      => $search,
         'products'    => $products,
         'segments'    => $segments,
         'total'       => $total,

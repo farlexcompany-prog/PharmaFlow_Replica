@@ -6,6 +6,7 @@ window.PharmaProducts = (() => {
     page: 1,
     perPage: 12,
     segmentsLoaded: false,
+    requestSeq: 0,
   };
 
   function escapeHtml(str) {
@@ -31,9 +32,10 @@ window.PharmaProducts = (() => {
   }
 
   function renderCard(product) {
-    const imgSrc = product.image_url && product.image_url.trim() !== ''
-      ? escapeHtml(product.image_url)
-      : `https://placehold.co/600x400?text=${encodeURIComponent(product.name || 'Farlex')}`;
+    const imgSrc =
+      product.image_url && product.image_url.trim() !== ''
+        ? escapeHtml(product.image_url)
+        : `https://placehold.co/600x400?text=${encodeURIComponent(product.name || 'Farlex')}`;
 
     const categoryBadge = product.category_name
       ? `<span class="badge bg-info-subtle text-dark border mb-2">${escapeHtml(product.category_name)}</span>`
@@ -82,27 +84,34 @@ window.PharmaProducts = (() => {
       <nav class="mt-4" aria-label="Products pagination">
         <ul class="pagination justify-content-center mb-0">
           <li class="page-item ${prevDisabled}">
-            <button class="page-link" data-page="${page - 1}" ${prevDisabled}>Previous</button>
+            <button type="button" class="page-link" data-page="${page - 1}" ${prevDisabled}>Previous</button>
           </li>
           <li class="page-item disabled">
             <span class="page-link">Page ${page} of ${totalPages}</span>
           </li>
           <li class="page-item ${nextDisabled}">
-            <button class="page-link" data-page="${page + 1}" ${nextDisabled}>Next</button>
+            <button type="button" class="page-link" data-page="${page + 1}" ${nextDisabled}>Next</button>
           </li>
         </ul>
       </nav>
     `;
   }
 
-  async function fetchProductsApi(params) {
+async function fetchProductsApi(params) {
     const query = params.toString();
-    const candidates = [
-      `/api/products.php?${query}`,
+    const pathname = window.location.pathname || '/';
+    const baseDir = pathname.endsWith('/')
+      ? pathname
+      : pathname.replace(/\/[^/]*$/, '/');
+
+    const candidates = Array.from(new Set([
+      `${baseDir}api/products.php?${query}`,
+      `${baseDir}../api/products.php?${query}`,
       `/PHARMA-FLOW/api/products.php?${query}`,
+      `/api/products.php?${query}`,
       `api/products.php?${query}`,
       `../api/products.php?${query}`,
-    ];
+    ]));
 
     let lastError = null;
     for (const url of candidates) {
@@ -130,10 +139,11 @@ window.PharmaProducts = (() => {
   }
 
   async function fetchAndRender(container) {
+    const seq = ++state.requestSeq;
     const gridEl = container.querySelector('#products-card-grid');
     const metaEl = container.querySelector('#products-meta');
-    const pagEl  = container.querySelector('#products-pagination');
-    const segEl  = container.querySelector('#product-segment-filter');
+    const pagEl = container.querySelector('#products-pagination');
+    const segEl = container.querySelector('#product-segment-filter');
 
     if (!gridEl) return;
 
@@ -146,6 +156,7 @@ window.PharmaProducts = (() => {
 
     const params = new URLSearchParams({
       search: state.search,
+      q: state.search,
       segment_id: state.segmentId,
       page: String(state.page),
       per_page: String(state.perPage),
@@ -153,11 +164,12 @@ window.PharmaProducts = (() => {
 
     try {
       const data = await fetchProductsApi(params);
+      if (seq !== state.requestSeq) return;
 
       if (segEl && !state.segmentsLoaded && Array.isArray(data.segments)) {
         const options = ['<option value="">All Categories</option>'].concat(
-          data.segments.map(s =>
-            `<option value="${s.id}">${escapeHtml(s.name)} (${s.product_count})</option>`
+          data.segments.map(
+            (s) => `<option value="${s.id}">${escapeHtml(s.name)} (${s.product_count})</option>`
           )
         );
         segEl.innerHTML = options.join('');
@@ -166,7 +178,8 @@ window.PharmaProducts = (() => {
       }
 
       if (metaEl) {
-        metaEl.textContent = `Showing ${data.products.length} of ${data.total} products`;
+        const searchInfo = state.search ? ` for "${state.search}"` : '';
+        metaEl.textContent = `Showing ${data.products.length} of ${data.total} products${searchInfo}`;
       }
 
       if (!data.products.length) {
@@ -185,6 +198,7 @@ window.PharmaProducts = (() => {
         pagEl.innerHTML = renderPagination(data.page, data.total_pages);
       }
     } catch (err) {
+      if (seq !== state.requestSeq) return;
       gridEl.innerHTML = `
         <div class="col-12">
           <div class="alert alert-danger mb-0">${escapeHtml(err.message)}</div>
@@ -194,6 +208,8 @@ window.PharmaProducts = (() => {
   }
 
   async function mount(container) {
+    state.search = '';
+    state.segmentId = '';
     state.page = 1;
     state.segmentsLoaded = false;
 
@@ -204,14 +220,24 @@ window.PharmaProducts = (() => {
             <h2 class="fw-bold mb-1">Farlex Product Catalog</h2>
             <p class="text-muted small mb-0" id="products-meta">Loading products...</p>
           </div>
-          <div class="d-flex flex-wrap gap-2">
-            <input
-              type="search"
-              id="product-search-input"
-              class="form-control"
-              placeholder="Search brand, salt, packing..."
-              style="min-width: 240px;"
-            >
+          <div class="d-flex flex-wrap gap-2 align-items-center">
+            <div class="input-group" style="min-width: 260px; max-width: 340px;">
+              <input
+                type="search"
+                id="product-search-input"
+                class="form-control"
+                placeholder="Search brand, salt, packing..."
+                autocomplete="off"
+              >
+              <button
+                type="button"
+                id="product-search-clear"
+                class="btn btn-outline-secondary"
+                title="Clear search"
+              >
+                <i class="bi bi-x-lg"></i>
+              </button>
+            </div>
             <select id="product-segment-filter" class="form-select" style="min-width: 210px;">
               <option value="">All Categories</option>
             </select>
@@ -224,17 +250,42 @@ window.PharmaProducts = (() => {
     `;
 
     const searchInput = container.querySelector('#product-search-input');
-    const segSelect   = container.querySelector('#product-segment-filter');
-    const pagWrap     = container.querySelector('#products-pagination');
+    const clearBtn = container.querySelector('#product-search-clear');
+    const segSelect = container.querySelector('#product-segment-filter');
+    const pagWrap = container.querySelector('#products-pagination');
+
+    const runSearch = (val) => {
+      state.search = String(val ?? '').trim();
+      state.page = 1;
+      fetchAndRender(container);
+    };
 
     let debounceTimer = null;
     searchInput?.addEventListener('input', (e) => {
       clearTimeout(debounceTimer);
+      const val = e.target.value;
+      if (val.trim() === '') {
+        runSearch('');
+        return;
+      }
       debounceTimer = setTimeout(() => {
-        state.search = e.target.value.trim();
-        state.page = 1;
-        fetchAndRender(container);
-      }, 250);
+        runSearch(val);
+      }, 180);
+    });
+
+    searchInput?.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        clearTimeout(debounceTimer);
+        runSearch(e.target.value);
+      }
+    });
+
+    clearBtn?.addEventListener('click', () => {
+      clearTimeout(debounceTimer);
+      if (searchInput) searchInput.value = '';
+      runSearch('');
+      searchInput?.focus();
     });
 
     segSelect?.addEventListener('change', (e) => {

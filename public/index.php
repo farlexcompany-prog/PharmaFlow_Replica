@@ -1,4 +1,5 @@
 <?php
+// public/index.php
 declare(strict_types=1);
 ?>
 <!doctype html>
@@ -6,13 +7,13 @@ declare(strict_types=1);
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>PharmaFlow — All Services in One Place</title>
+  <title>Farlex PharmaFlow — All Services in One Place</title>
   <link rel="stylesheet" href="assets/vendor/bootstrap/css/bootstrap.min.css">
   <link rel="stylesheet" href="assets/vendor/icons/bootstrap-icons.min.css">
   <link rel="stylesheet" href="assets/css/app.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
   <div class="pf-shell" id="pfShell">
@@ -23,10 +24,10 @@ declare(strict_types=1);
           <i class="bi bi-list fs-5"></i>
         </button>
         <a href="#/" class="pf-brand text-decoration-none d-flex align-items-center gap-2">
-          <span class="pf-brand-badge">PF</span>
+          <span class="pf-brand-badge">FP</span>
           <div>
-            <div class="pf-brand-title">PharmaFlow</div>
-            <div class="pf-brand-sub d-none d-sm-block">All Services at One Place</div>
+            <div class="pf-brand-title">Farlex PharmaFlow</div>
+            <div class="pf-brand-sub d-none d-sm-block">Farlex Pharmaceuticals Pvt. Ltd.</div>
           </div>
         </a>
       </div>
@@ -105,7 +106,7 @@ declare(strict_types=1);
       <!-- Main Dynamic Content -->
       <main class="pf-main flex-grow-1 p-3 p-md-4">
         <div id="pfAlertBanner" class="alert alert-info py-2 px-3 small mb-3 d-flex align-items-center justify-content-between" role="alert">
-          <span><strong>Local Replica Mode:</strong> Sample files and placeholder records are used for local testing. Replace with your own authorized assets before production.</span>
+          <span><strong>Farlex Pharmaceuticals Pvt. Ltd.</strong> — Local Replica Mode (`www.farlex.in` • Panchkula, Haryana).</span>
           <button type="button" class="btn-close btn-sm" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
 
@@ -124,5 +125,6 @@ declare(strict_types=1);
   <script src="assets/js/customer_login.js"></script>
   <script src="assets/js/contact.js"></script>
   <script src="assets/js/products.js"></script>
+  <script src="assets/js/reminder_card.js"></script>
 </body>
 </html>
