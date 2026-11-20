@@ -1,0 +1,242 @@
+[
+  {
+    "id": "g-01",
+    "name": "Dubai Luxury Partner Trip Package (4N/5D)",
+    "image": "data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='600' viewBox='0 0 600 600'%3E%3Crect width='600' height='600' fill='%23eff6ff'/%3E%3Crect x='90' y='130' width='420' height='340' rx='24' fill='%230f4c81'/%3E%3Ctext x='300' y='285' font-family='Inter,Arial,sans-serif' font-size='32' font-weight='700' fill='%23ffffff' text-anchor='middle'%3EDubai Trip%3C/text%3E%3Ctext x='300' y='330' font-family='Inter,Arial,sans-serif' font-size='20' fill='%23fde68a' text-anchor='middle'%3ETravel %26 Bags%3C/text%3E%3C/svg%3E",
+    "points": 2000000,
+    "category": "Travel & Bags",
+    "description": "Complimentary partner travel package featuring return airfare, hotel stay, desert safari, and city tour inclusions subject to scheme rules."
+  },
+  {
+    "id": "g-02",
+    "name": "14-Place Setting Stainless Steel Dishwasher",
+    "image": "data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='600' viewBox='0 0 600 600'%3E%3Crect width='600' height='600' fill='%23f8fafc'/%3E%3Crect x='130' y='100' width='340' height='400' rx='20' fill='%231e293b'/%3E%3Crect x='160' y='135' width='280' height='70' rx='10' fill='%23334155'/%3E%3Ctext x='300' y='330' font-family='Inter,Arial,sans-serif' font-size='28' font-weight='700' fill='%23ffffff' text-anchor='middle'%3EDishwasher%3C/text%3E%3Ctext x='300' y='370' font-family='Inter,Arial,sans-serif' font-size='18' fill='%2393c5fd' text-anchor='middle'%3EKitchen%3C/text%3E%3C/svg%3E",
+    "points": 1000000,
+    "category": "Kitchen",
+    "description": "High-efficiency auto-wash dishwasher with multiple wash programs, hygiene rinse, and durable stainless steel interior."
+  },
+  {
+    "id": "g-03",
+    "name": "1.5 Ton 5-Star Inverter Split Air Conditioner",
+    "image": "data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='600' viewBox='0 0 600 600'%3E%3Crect width='600' height='600' fill='%23f0f9ff'/%3E%3Crect x='85' y='180' width='430' height='150' rx='24' fill='%230f4c81'/%3E%3Crect x='115' y='295' width='370' height='10' rx='5' fill='%23d97706'/%3E%3Ctext x='300' y='245' font-family='Inter,Arial,sans-serif' font-size='28' font-weight='700' fill='%23ffffff' text-anchor='middle'%3EAir Conditioner%3C/text%3E%3Ctext x='300' y='385' font-family='Inter,Arial,sans-serif' font-size='20' fill='%230f4c81' text-anchor='middle'%3EHome Appliances%3C/text%3E%3C/svg%3E",
+    "points": 750000,
+    "category": "Home Appliances",
+    "description": "Energy-saving inverter split AC engineered for rapid cooling, quiet operation, and low power consumption."
+  },
+  {
+    "id": "g-04",
+    "name": "Side-by-Side Convertible Frost-Free Refrigerator",
+    "image": "data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='600' viewBox='0 0 600 600'%3E%3Crect width='600' height='600' fill='%23f8fafc'/%3E%3Crect x='155' y='90' width='290' height='420' rx='20' fill='%230f4c81'/%3E%3Cline x1='300' y1='90' x2='300' y2='510' stroke='%23ffffff' stroke-width='4'/%3E%3Ctext x='300' y='310' font-family='Inter,Arial,sans-serif' font-size='26' font-weight='700' fill='%23ffffff' text-anchor='middle'%3ERefrigerator%3C/text%3E%3C/svg%3E",
+    "points": 500000,
+    "category": "Home Appliances",
+    "description": "Spacious frost-free refrigerator with convertible storage zones, multi-airflow cooling, and toughened glass shelves."
+  },
+  {
+    "id": "g-05",
+    "name": "8 kg Front-Load Inverter Washing Machine",
+    "image": "data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='600' viewBox='0 0 600 600'%3E%3Crect width='600' height='600' fill='%23f8fafc'/%3E%3Crect x='145' y='95' width='310' height='410' rx='20' fill='%231e293b'/%3E%3Ccircle cx='300' cy='325' r='105' fill='%230f4c81' stroke='%23e2e8f0' stroke-width='10'/%3E%3Ctext x='300' y='165' font-family='Inter,Arial,sans-serif' font-size='24' font-weight='700' fill='%23ffffff' text-anchor='middle'%3EWashing Machine%3C/text%3E%3C/svg%3E",
+    "points": 500000,
+    "category": "Home Appliances",
+    "description": "Smart front-load washing machine with steam care, drum hygiene, and gentle fabric protection."
+  },
+  {
+    "id": "g-06",
+    "name": "55-inch 4K Ultra HD Smart LED TV",
+    "image": "data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='600' viewBox='0 0 600 600'%3E%3Crect width='600' height='600' fill='%23f8fafc'/%3E%3Crect x='75' y='140' width='450' height='270' rx='14' fill='%230f172a' stroke='%230f4c81' stroke-width='8'/%3E%3Ctext x='300' y='285' font-family='Inter,Arial,sans-serif' font-size='32' font-weight='700' fill='%23ffffff' text-anchor='middle'%3E55%22 4K Smart TV%3C/text%3E%3C/svg%3E",
+    "points": 500000,
+    "category": "Electronics",
+    "description": "Crisp 4K UHD smart television with HDR support, voice remote, and built-in streaming apps."
+  },
+  {
+    "id": "g-07",
+    "name": "Motorized Folding Home Treadmill",
+    "image": "data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='600' viewBox='0 0 600 600'%3E%3Crect width='600' height='600' fill='%23fffbeb'/%3E%3Crect x='110' y='150' width='380' height='300' rx='22' fill='%230f4c81'/%3E%3Ctext x='300' y='295' font-family='Inter,Arial,sans-serif' font-size='32' font-weight='700' fill='%23ffffff' text-anchor='middle'%3ETreadmill%3C/text%3E%3Ctext x='300' y='335' font-family='Inter,Arial,sans-serif' font-size='18' fill='%23fde68a' text-anchor='middle'%3EHealth Devices%3C/text%3E%3C/svg%3E",
+    "points": 500000,
+    "category": "Health Devices",
+    "description": "Cushioned running deck treadmill with digital workout display, speed controls, and easy fold storage."
+  },
+  {
+    "id": "g-08",
+    "name": "43-inch Full HD Smart Android TV",
+    "image": "data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='600' viewBox='0 0 600 600'%3E%3Crect width='600' height='600' fill='%23f8fafc'/%3E%3Crect x='95' y='155' width='410' height='250' rx='14' fill='%231e293b'/%3E%3Ctext x='300' y='288' font-family='Inter,Arial,sans-serif' font-size='28' font-weight='700' fill='%23ffffff' text-anchor='middle'%3E43%22 Smart TV%3C/text%3E%3C/svg%3E",
+    "points": 375000,
+    "category": "Electronics",
+    "description": "Full HD smart TV with surround sound output, dual-band Wi-Fi, and multiple HDMI/USB ports."
+  },
+  {
+    "id": "g-09",
+    "name": "28L Convection Microwave Oven",
+    "image": "data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='600' viewBox='0 0 600 600'%3E%3Crect width='600' height='600' fill='%23f8fafc'/%3E%3Crect x='110' y='175' width='380' height='250' rx='20' fill='%230f4c81'/%3E%3Ctext x='300' y='308' font-family='Inter,Arial,sans-serif' font-size='26' font-weight='700' fill='%23ffffff' text-anchor='middle'%3EMicrowave Oven%3C/text%3E%3C/svg%3E",
+    "points": 250000,
+    "category": "Kitchen",
+    "description": "Versatile convection microwave for baking, grilling, defrosting, and everyday family meal prep."
+  },
+  {
+    "id": "g-10",
+    "name": "Goa & Coastal Leisure Getaway (3N/4D)",
+    "image": "data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='600' viewBox='0 0 600 600'%3E%3Crect width='600' height='600' fill='%23eff6ff'/%3E%3Crect x='100' y='160' width='400' height='280' rx='22' fill='%230f4c81'/%3E%3Ctext x='300' y='308' font-family='Inter,Arial,sans-serif' font-size='28' font-weight='700' fill='%23ffffff' text-anchor='middle'%3EGoa Getaway%3C/text%3E%3C/svg%3E",
+    "points": 250000,
+    "category": "Travel & Bags",
+    "description": "Relaxing partner getaway package with hotel stay and breakfast included under loyalty redemption guidelines."
+  },
+  {
+    "id": "g-11",
+    "name": "750W Heavy-Duty Mixer Grinder (4 Jars)",
+    "image": "data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='600' viewBox='0 0 600 600'%3E%3Crect width='600' height='600' fill='%23f8fafc'/%3E%3Crect x='130' y='160' width='340' height='280' rx='22' fill='%230f4c81'/%3E%3Ctext x='300' y='308' font-family='Inter,Arial,sans-serif' font-size='28' font-weight='700' fill='%23ffffff' text-anchor='middle'%3EMixer Grinder%3C/text%3E%3C/svg%3E",
+    "points": 100000,
+    "category": "Kitchen",
+    "description": "Powerful 750W motor with stainless steel jars for smooth grinding, blending, and chutney preparation."
+  },
+  {
+    "id": "g-12",
+    "name": "Hard-Shell Cabin & Check-In Luggage Set",
+    "image": "data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='600' viewBox='0 0 600 600'%3E%3Crect width='600' height='600' fill='%23f8fafc'/%3E%3Crect x='145' y='130' width='310' height='340' rx='24' fill='%231e293b'/%3E%3Ctext x='300' y='308' font-family='Inter,Arial,sans-serif' font-size='28' font-weight='700' fill='%23ffffff' text-anchor='middle'%3ELuggage Set%3C/text%3E%3C/svg%3E",
+    "points": 100000,
+    "category": "Travel & Bags",
+    "description": "Lightweight polycarbonate trolley set with 360-degree spinner wheels and combination lock."
+  },
+  {
+    "id": "g-13",
+    "name": "Smart Fitness & SpO2 Smartwatch",
+    "image": "data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='600' viewBox='0 0 600 600'%3E%3Crect width='600' height='600' fill='%23fffbeb'/%3E%3Crect x='185' y='150' width='230' height='300' rx='46' fill='%230f172a'/%3E%3Ctext x='300' y='308' font-family='Inter,Arial,sans-serif' font-size='24' font-weight='700' fill='%23ffffff' text-anchor='middle'%3ESmartwatch%3C/text%3E%3C/svg%3E",
+    "points": 87500,
+    "category": "Electronics",
+    "description": "AMOLED display smartwatch with heart rate tracking, step counter, call alerts, and multi-day battery life."
+  },
+  {
+    "id": "g-14",
+    "name": "Cordless Stick Vacuum Cleaner",
+    "image": "data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='600' viewBox='0 0 600 600'%3E%3Crect width='600' height='600' fill='%23f8fafc'/%3E%3Crect x='130' y='160' width='340' height='280' rx='22' fill='%230f4c81'/%3E%3Ctext x='300' y='308' font-family='Inter,Arial,sans-serif' font-size='26' font-weight='700' fill='%23ffffff' text-anchor='middle'%3EVacuum Cleaner%3C/text%3E%3C/svg%3E",
+    "points": 75000,
+    "category": "Home Appliances",
+    "description": "Rechargeable cordless cleaner with strong suction and detachable attachments for floors and upholstery."
+  },
+  {
+    "id": "g-15",
+    "name": "Digital Air Fryer (4.5L Capacity)",
+    "image": "data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='600' viewBox='0 0 600 600'%3E%3Crect width='600' height='600' fill='%23f8fafc'/%3E%3Crect x='145' y='140' width='310' height='320' rx='24' fill='%231e293b'/%3E%3Ctext x='300' y='308' font-family='Inter,Arial,sans-serif' font-size='30' font-weight='700' fill='%23ffffff' text-anchor='middle'%3EAir Fryer%3C/text%3E%3C/svg%3E",
+    "points": 75000,
+    "category": "Kitchen",
+    "description": "Rapid air-circulation fryer with digital touch preset menu for low-oil snacks and roasting."
+  },
+  {
+    "id": "g-16",
+    "name": "Wireless Active Noise-Cancelling Headphones",
+    "image": "data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='600' viewBox='0 0 600 600'%3E%3Crect width='600' height='600' fill='%23eff6ff'/%3E%3Crect x='125' y='160' width='350' height='280' rx='24' fill='%230f4c81'/%3E%3Ctext x='300' y='308' font-family='Inter,Arial,sans-serif' font-size='28' font-weight='700' fill='%23ffffff' text-anchor='middle'%3EANC Headphones%3C/text%3E%3C/svg%3E",
+    "points": 50000,
+    "category": "Electronics",
+    "description": "Over-ear Bluetooth headphones with active noise reduction, plush ear cushions, and clear call mic."
+  },
+  {
+    "id": "g-17",
+    "name": "Percussion Deep Tissue Massage Gun",
+    "image": "data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='600' viewBox='0 0 600 600'%3E%3Crect width='600' height='600' fill='%23fffbeb'/%3E%3Crect x='130' y='160' width='340' height='280' rx='22' fill='%230f4c81'/%3E%3Ctext x='300' y='308' font-family='Inter,Arial,sans-serif' font-size='28' font-weight='700' fill='%23ffffff' text-anchor='middle'%3EMassage Gun%3C/text%3E%3C/svg%3E",
+    "points": 50000,
+    "category": "Health Devices",
+    "description": "Multi-speed muscle recovery massager with interchangeable heads and rechargeable lithium battery."
+  },
+  {
+    "id": "g-18",
+    "name": "3-Piece Tri-Ply Stainless Cookware Set",
+    "image": "data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='600' viewBox='0 0 600 600'%3E%3Crect width='600' height='600' fill='%23f8fafc'/%3E%3Crect x='130' y='160' width='340' height='280' rx='22' fill='%231e293b'/%3E%3Ctext x='300' y='308' font-family='Inter,Arial,sans-serif' font-size='28' font-weight='700' fill='%23ffffff' text-anchor='middle'%3ECookware Set%3C/text%3E%3C/svg%3E",
+    "points": 37500,
+    "category": "Kitchen",
+    "description": "Even-heating tri-ply cookware set compatible with induction and gas stoves."
+  },
+  {
+    "id": "g-19",
+    "name": "Waterproof Grooming & Beard Trimmer Kit",
+    "image": "data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='600' viewBox='0 0 600 600'%3E%3Crect width='600' height='600' fill='%23eff6ff'/%3E%3Crect x='130' y='160' width='340' height='280' rx='22' fill='%230f4c81'/%3E%3Ctext x='300' y='308' font-family='Inter,Arial,sans-serif' font-size='28' font-weight='700' fill='%23ffffff' text-anchor='middle'%3EGrooming Kit%3C/text%3E%3C/svg%3E",
+    "points": 37500,
+    "category": "Personal Care",
+    "description": "Self-sharpening blades, multiple comb lengths, and USB fast charging for daily grooming."
+  },
+  {
+    "id": "g-20",
+    "name": "20,000 mAh Fast-Charge Power Bank",
+    "image": "data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='600' viewBox='0 0 600 600'%3E%3Crect width='600' height='600' fill='%23f8fafc'/%3E%3Crect x='145' y='130' width='310' height='340' rx='24' fill='%230f4c81'/%3E%3Ctext x='300' y='308' font-family='Inter,Arial,sans-serif' font-size='28' font-weight='700' fill='%23ffffff' text-anchor='middle'%3EPower Bank%3C/text%3E%3C/svg%3E",
+    "points": 25000,
+    "category": "Electronics",
+    "description": "High-capacity portable power bank with fast charging output for smartphones and tablets on the move."
+  },
+  {
+    "id": "g-21",
+    "name": "Business Laptop Backpack (15.6-inch)",
+    "image": "data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='600' viewBox='0 0 600 600'%3E%3Crect width='600' height='600' fill='%23f8fafc'/%3E%3Crect x='145' y='130' width='310' height='340' rx='24' fill='%231e293b'/%3E%3Ctext x='300' y='308' font-family='Inter,Arial,sans-serif' font-size='28' font-weight='700' fill='%23ffffff' text-anchor='middle'%3ELaptop Bag%3C/text%3E%3C/svg%3E",
+    "points": 25000,
+    "category": "Travel & Bags",
+    "description": "Padded laptop compartment, water-resistant fabric, and organized pockets for daily travel."
+  },
+  {
+    "id": "g-22",
+    "name": "Automatic Digital Upper-Arm BP Monitor",
+    "image": "data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='600' viewBox='0 0 600 600'%3E%3Crect width='600' height='600' fill='%23fffbeb'/%3E%3Crect x='130' y='160' width='340' height='280' rx='22' fill='%230f4c81'/%3E%3Ctext x='300' y='308' font-family='Inter,Arial,sans-serif' font-size='28' font-weight='700' fill='%23ffffff' text-anchor='middle'%3EBP Monitor%3C/text%3E%3C/svg%3E",
+    "points": 25000,
+    "category": "Health Devices",
+    "description": "One-touch blood pressure monitor with clear backlit readout and memory storage."
+  },
+  {
+    "id": "g-23",
+    "name": "1.5L Stainless Steel Electric Kettle",
+    "image": "data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='600' viewBox='0 0 600 600'%3E%3Crect width='600' height='600' fill='%23f8fafc'/%3E%3Crect x='130' y='160' width='340' height='280' rx='22' fill='%230f4c81'/%3E%3Ctext x='300' y='308' font-family='Inter,Arial,sans-serif' font-size='28' font-weight='700' fill='%23ffffff' text-anchor='middle'%3EElectric Kettle%3C/text%3E%3C/svg%3E",
+    "points": 17500,
+    "category": "Kitchen",
+    "description": "Rapid-boil electric kettle with auto shut-off, dry-boil protection, and cordless 360-degree base."
+  },
+  {
+    "id": "g-24",
+    "name": "Ionic Hair Dryer & Styling Brush",
+    "image": "data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='600' viewBox='0 0 600 600'%3E%3Crect width='600' height='600' fill='%23eff6ff'/%3E%3Crect x='130' y='160' width='340' height='280' rx='22' fill='%231e293b'/%3E%3Ctext x='300' y='308' font-family='Inter,Arial,sans-serif' font-size='28' font-weight='700' fill='%23ffffff' text-anchor='middle'%3EHair Dryer%3C/text%3E%3C/svg%3E",
+    "points": 17500,
+    "category": "Personal Care",
+    "description": "Compact hair dryer with multiple heat/speed settings and concentrator nozzle."
+  },
+  {
+    "id": "g-25",
+    "name": "Dry Steam Iron (1200W Non-Stick Soleplate)",
+    "image": "data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='600' viewBox='0 0 600 600'%3E%3Crect width='600' height='600' fill='%23f8fafc'/%3E%3Crect x='130' y='160' width='340' height='280' rx='22' fill='%230f4c81'/%3E%3Ctext x='300' y='308' font-family='Inter,Arial,sans-serif' font-size='28' font-weight='700' fill='%23ffffff' text-anchor='middle'%3ESteam Iron%3C/text%3E%3C/svg%3E",
+    "points": 12500,
+    "category": "Home Appliances",
+    "description": "Smooth-gliding soleplate with adjustable thermostat dial for crisp everyday garment care."
+  },
+  {
+    "id": "g-26",
+    "name": "Insulated Travel Duffel & Pouch Combo",
+    "image": "data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='600' viewBox='0 0 600 600'%3E%3Crect width='600' height='600' fill='%23f8fafc'/%3E%3Crect x='130' y='160' width='340' height='280' rx='22' fill='%230f4c81'/%3E%3Ctext x='300' y='308' font-family='Inter,Arial,sans-serif' font-size='28' font-weight='700' fill='%23ffffff' text-anchor='middle'%3ETravel Duffel%3C/text%3E%3C/svg%3E",
+    "points": 12500,
+    "category": "Travel & Bags",
+    "description": "Spacious gym and weekend travel duffel bag with detachable shoulder strap."
+  },
+  {
+    "id": "g-27",
+    "name": "Aroma Diffuser & Personal Care Gift Hamper",
+    "image": "data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='600' viewBox='0 0 600 600'%3E%3Crect width='600' height='600' fill='%23fffbeb'/%3E%3Crect x='130' y='160' width='340' height='280' rx='22' fill='%231e293b'/%3E%3Ctext x='300' y='308' font-family='Inter,Arial,sans-serif' font-size='26' font-weight='700' fill='%23ffffff' text-anchor='middle'%3ECare Hamper%3C/text%3E%3C/svg%3E",
+    "points": 12500,
+    "category": "Personal Care",
+    "description": "Curated wellness and personal care assortment ideal for partner appreciation."
+  },
+  {
+    "id": "g-28",
+    "name": "Digital Body Weight Scale",
+    "image": "data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='600' viewBox='0 0 600 600'%3E%3Crect width='600' height='600' fill='%23f8fafc'/%3E%3Crect x='145' y='140' width='310' height='320' rx='24' fill='%230f4c81'/%3E%3Ctext x='300' y='308' font-family='Inter,Arial,sans-serif' font-size='28' font-weight='700' fill='%23ffffff' text-anchor='middle'%3EWeighing Scale%3C/text%3E%3C/svg%3E",
+    "points": 7500,
+    "category": "Health Devices",
+    "description": "Tempered glass digital weighing scale with step-on activation and clear LCD display."
+  },
+  {
+    "id": "g-29",
+    "name": "Fingertip Pulse Oximeter",
+    "image": "data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='600' viewBox='0 0 600 600'%3E%3Crect width='600' height='600' fill='%23eff6ff'/%3E%3Crect x='145' y='140' width='310' height='320' rx='24' fill='%231e293b'/%3E%3Ctext x='300' y='308' font-family='Inter,Arial,sans-serif' font-size='28' font-weight='700' fill='%23ffffff' text-anchor='middle'%3EPulse Oximeter%3C/text%3E%3C/svg%3E",
+    "points": 7500,
+    "category": "Health Devices",
+    "description": "Compact fingertip oximeter for quick blood oxygen and pulse rate readings."
+  },
+  {
+    "id": "g-30",
+    "name": "Pocket Trimmer & Travel Toiletry Kit",
+    "image": "data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='600' viewBox='0 0 600 600'%3E%3Crect width='600' height='600' fill='%23fffbeb'/%3E%3Crect x='145' y='140' width='310' height='320' rx='24' fill='%230f4c81'/%3E%3Ctext x='300' y='308' font-family='Inter,Arial,sans-serif' font-size='26' font-weight='700' fill='%23ffffff' text-anchor='middle'%3ETravel Trimmer%3C/text%3E%3C/svg%3E",
+    "points": 7500,
+    "category": "Personal Care",
+    "description": "Compact personal care kit designed for convenient travel and daily touch-ups."
+  }
+]

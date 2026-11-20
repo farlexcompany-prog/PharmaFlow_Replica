@@ -31,6 +31,18 @@ window.PharmaRouter = (() => {
         }
       },
     },
+    '/gifts': {
+        title: 'Gift Cards — Farlex Rewards',
+        render: (el, params) => {
+          if (window.PharmaRewardsCatalogue) {
+             window.PharmaRewardsCatalogue.mount(el, { view: 'catalogue', params });
+           } else if (window.PharmaGifts) {
+            window.PharmaGifts.mount(el);
+           } else {
+              el.innerHTML = '<div class="alert alert-warning">Gift module not loaded. Check script path in public/index.php.</div>';
+          }
+         },
+    },
     '/contact': {
       title: 'Contact Us — Farlex PharmaFlow',
       render: (el) => {
@@ -59,6 +71,41 @@ window.PharmaRouter = (() => {
         }
       },
     },
+
+// public/assets/js/router.js ke routes object mein add karein:
+    '/rewards-catalogue': {
+      title: 'Partner Rewards – Gift Catalogue | Farlex Rewards',
+      render: (el, params) => {
+        if (window.PharmaRewardsCatalogue) {
+          window.PharmaRewardsCatalogue.mount(el, { view: 'catalogue', params });
+        }
+      },
+    },
+    '/gift': {
+      title: 'Gift Details | Farlex Rewards',
+      render: (el, params) => {
+        if (window.PharmaRewardsCatalogue) {
+          window.PharmaRewardsCatalogue.mount(el, { view: 'detail', params });
+        }
+      },
+    },
+    '/claim-gift': {
+      title: 'Claim Gift | Farlex Rewards',
+      render: (el, params) => {
+        if (window.PharmaRewardsCatalogue) {
+          window.PharmaRewardsCatalogue.mount(el, { view: 'claim', params });
+        }
+      },
+    },
+    '/scheme-terms': {
+      title: 'Scheme Terms | Farlex Rewards',
+      render: (el, params) => {
+        if (window.PharmaRewardsCatalogue) {
+          window.PharmaRewardsCatalogue.mount(el, { view: 'terms', params });
+        }
+      },
+    },
+
     
     '/custom-reminder-cards': {
       title: 'Custom Reminder Cards — Farlex PharmaFlow',

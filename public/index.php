@@ -13,6 +13,8 @@ declare(strict_types=1);
   <link rel="stylesheet" href="assets/css/app.css">
   <link rel="stylesheet" href="assets/css/custom-reminder-cards.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
+  <!-- public/index.php (<head> ke andar) -->
+<link rel="stylesheet" href="assets/css/rewards_catalogue.css">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
 </head>
@@ -128,5 +130,21 @@ declare(strict_types=1);
   <script src="assets/js/products.js"></script>
   <script src="assets/js/reminder_card.js"></script>
   <script src="assets/js/fixed_reminder_cards.js"></script>
+  <!-- public/index.php (</body> se pehle) -->
+  <script src="assets/js/rewards_catalogue.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const target =
+        document.querySelector('#giftsContainer') ||
+        document.querySelector('#app') ||
+        document.querySelector('main .container') ||
+        document.querySelector('main');
+
+      if (target && window.PharmaRewardsCatalogue) {
+        window.PharmaRewardsCatalogue.mount(target, { view: 'catalogue' });
+      }
+    });
+  </script>
+</body>
 </body>
 </html>

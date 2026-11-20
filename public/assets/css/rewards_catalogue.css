@@ -1,0 +1,210 @@
+/* public/assets/css/rewards_catalogue.css */
+:root {
+  --rc-primary: #0f4c81;
+  --rc-primary-hover: #0a365c;
+  --rc-accent: #d97706;
+  --rc-accent-soft: #fef3c7;
+  --rc-surface: #ffffff;
+  --rc-subtle: #f8fafc;
+  --rc-muted: #f1f5f9;
+  --rc-heading: #0f172a;
+  --rc-body: #475569;
+  --rc-text-muted: #64748b;
+  --rc-border: #e2e8f0;
+  --rc-shadow: 0 6px 20px rgba(15, 23, 42, 0.06);
+  --rc-shadow-hover: 0 14px 32px rgba(15, 23, 42, 0.12);
+}
+
+.rc-wrap {
+  font-family: 'Inter', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  color: var(--rc-body);
+}
+
+.rc-announcement {
+  background: var(--rc-primary);
+  color: #ffffff;
+  padding: 10px 16px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.rc-disclaimers {
+  background: var(--rc-subtle);
+  border: 1px solid var(--rc-border);
+  border-radius: 10px;
+  padding: 8px 14px;
+  margin-bottom: 18px;
+  font-size: 0.78rem;
+  color: var(--rc-text-muted);
+}
+
+.rc-hero {
+  background: linear-gradient(135deg, #f8fafc 0%, #eff6ff 100%);
+  border: 1px solid var(--rc-border);
+  border-radius: 16px;
+  padding: 32px 24px;
+  margin-bottom: 28px;
+}
+
+.rc-hero-title {
+  color: var(--rc-heading);
+  font-weight: 800;
+  font-size: clamp(1.75rem, 3.5vw, 2.5rem);
+  line-height: 1.18;
+}
+
+.rc-step-card {
+  background: var(--rc-surface);
+  border: 1px solid var(--rc-border);
+  border-radius: 12px;
+  padding: 20px;
+  height: 100%;
+  box-shadow: var(--rc-shadow);
+}
+
+.rc-step-badge {
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  background: var(--rc-primary);
+  color: #ffffff;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
+.rc-chip {
+  border: 1px solid var(--rc-border);
+  background: #ffffff;
+  color: var(--rc-body);
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-size: 0.82rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.rc-chip:hover,
+.rc-chip.is-active {
+  background: var(--rc-primary);
+  border-color: var(--rc-primary);
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.rc-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+@media (max-width: 380px) {
+  .rc-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (min-width: 768px) {
+  .rc-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .rc-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 22px;
+  }
+}
+
+/* Gift Card Styling */
+.rc-card {
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+  border: 1px solid var(--rc-border);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: var(--rc-shadow);
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.rc-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--rc-shadow-hover);
+  border-color: #cbd5e1;
+}
+
+.rc-gift-card-top {
+  background: var(--rc-primary);
+  color: #ffffff;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.rc-gift-card-tag {
+  background: rgba(255, 255, 255, 0.16);
+  padding: 2px 8px;
+  border-radius: 999px;
+  color: #fde68a;
+  white-space: nowrap;
+}
+
+.rc-card-img-wrap {
+  aspect-ratio: 1 / 1;
+  background: var(--rc-muted);
+  overflow: hidden;
+  border-bottom: 1px dashed var(--rc-border);
+}
+
+.rc-card-img-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.rc-card-title {
+  color: var(--rc-heading);
+  font-weight: 700;
+  font-size: 0.96rem;
+  line-height: 1.35;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: 2.58em;
+}
+
+.rc-points-val {
+  color: var(--rc-primary);
+  font-weight: 800;
+  font-size: 1.08rem;
+}
+
+.rc-btn-primary {
+  background: var(--rc-primary);
+  border-color: var(--rc-primary);
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.rc-btn-primary:hover {
+  background: var(--rc-primary-hover);
+  border-color: var(--rc-primary-hover);
+  color: #ffffff;
+}
