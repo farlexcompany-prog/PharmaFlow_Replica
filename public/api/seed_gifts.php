@@ -23,7 +23,7 @@ try {
 
     if (!($pdo instanceof PDO)) {
         $pdo = new PDO(
-            'mysql:host=127.0.0.1;port=3306;dbname=pharma_flow;charset=utf8mb4',
+            'mysql:host=127.0.0.1;port=3306;dbname=pharmaflow_db;charset=utf8mb4',
             'root',
             '',
             [

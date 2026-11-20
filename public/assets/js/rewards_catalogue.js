@@ -58,6 +58,139 @@ window.PharmaRewardsCatalogue = (() => {
     return n.toLocaleString('en-IN');
   }
 
+  (function () {
+  if (window.__farlexClaimBound) return;
+  window.__farlexClaimBound = true;
+
+  function getClaimEndpoint() {
+    const base = document.querySelector('base')?.getAttribute('href') || '/';
+    const normalizedBase = base.endsWith('/') ? base.slice(0, -1) : base;
+    return `${normalizedBase}/api/gift_claims.php`.replace(/\/{2,}/g, '/');
+  }
+
+  function findFormField(form, keys) {
+    for (const key of keys) {
+      const el =
+        form.querySelector(`[name="${key}"]`) ||
+        form.querySelector(`#${key}`) ||
+        form.querySelector(`[data-field="${key}"]`);
+      if (el) return el;
+    }
+    return null;
+  }
+
+  function showClaimFeedback(form, message, isError = false) {
+    let box = form.querySelector('.claim-feedback-msg');
+    if (!box) {
+      box = document.createElement('div');
+      box.className = 'claim-feedback-msg';
+      box.style.marginTop = '12px';
+      box.style.padding = '10px 14px';
+      box.style.borderRadius = '8px';
+      box.style.fontSize = '14px';
+      box.style.fontWeight = '500';
+      form.appendChild(box);
+    }
+    box.textContent = message;
+    box.style.background = isError ? '#fef2f2' : '#ecfdf5';
+    box.style.color = isError ? '#991b1b' : '#065f46';
+    box.style.border = isError ? '1px solid #fecaca' : '1px solid #a7f3d0';
+  }
+
+  async function submitClaim(form) {
+    if (!form || form.dataset.submitting === '1') return;
+
+    const ledgerEl = findFormField(form, ['ledger_name', 'ledgerName', 'partner_name', 'ledger-name']);
+    const partyEl  = findFormField(form, ['party_code', 'partyCode', 'partner_code', 'party-code']);
+    const phoneEl  = findFormField(form, ['contact_no', 'contactNo', 'phone', 'contact-no']);
+    const addrEl   = findFormField(form, ['address', 'claim_address', 'claim-address']);
+    const giftEl   = findFormField(form, ['selected_gift', 'selectedGift', 'gift', 'selected-gift']);
+
+    const payload = {
+      ledger_name: String(ledgerEl?.value || '').trim(),
+      party_code: String(partyEl?.value || '').trim(),
+      contact_no: String(phoneEl?.value || '').trim(),
+      address: String(addrEl?.value || '').trim(),
+      selected_gift: String(giftEl?.value || '').trim(),
+    };
+
+    if (!payload.ledger_name || !payload.party_code || !payload.contact_no || !payload.address || !payload.selected_gift) {
+      showClaimFeedback(form, 'Please fill Ledger Name, Party code, Contact no, Address, and Selected gift.', true);
+      return;
+    }
+
+    const btn = form.querySelector('button[type="submit"], input[type="submit"], .claim-submit-btn');
+    const prevText = btn ? btn.textContent : '';
+    form.dataset.submitting = '1';
+    if (btn) {
+      btn.disabled = true;
+      btn.textContent = 'Submitting...';
+    }
+
+    try {
+      const res = await fetch(getClaimEndpoint(), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      const raw = await res.text();
+      let data = {};
+      try {
+        data = JSON.parse(raw);
+      } catch (_) {
+        throw new Error(`Invalid response: ${raw.slice(0, 120)}`);
+      }
+
+      if (!res.ok || !data.ok) {
+        showClaimFeedback(form, data.error || 'Could not submit claim.', true);
+        return;
+      }
+
+      showClaimFeedback(form, `Claim #${data.claim_id} submitted successfully!`, false);
+      form.reset();
+    } catch (err) {
+      console.error('Claim error:', err);
+      showClaimFeedback(form, err.message || 'Server/network error while submitting claim.', true);
+    } finally {
+      form.dataset.submitting = '0';
+      if (btn) {
+        btn.disabled = false;
+        btn.textContent = prevText || 'Submit claim request';
+      }
+    }
+  }
+
+  document.addEventListener('submit', function (event) {
+    const form = event.target;
+    if (!(form instanceof HTMLFormElement)) return;
+    const isClaimForm =
+      form.matches('#giftClaimForm, #claimGiftForm, .gift-claim-form, [data-claim-form]') ||
+      Boolean(findFormField(form, ['ledger_name', 'party_code', 'contact_no', 'selected_gift']));
+
+    if (isClaimForm) {
+      event.preventDefault();
+      submitClaim(form);
+    }
+  });
+
+  document.addEventListener('click', function (event) {
+    const btn = event.target.closest('button, [role="button"], input[type="submit"]');
+    if (!btn) return;
+
+    const text = String(btn.textContent || btn.value || '').trim().toLowerCase();
+    if (btn.matches('.claim-submit-btn, [data-submit-claim]') || text.includes('submit claim')) {
+      const form =
+        btn.closest('form') ||
+        document.querySelector('#giftClaimForm, #claimGiftForm, .gift-claim-form, [data-claim-form]');
+      if (form) {
+        event.preventDefault();
+        submitClaim(form);
+      }
+    }
+  });
+})();
+
   function getCardTierLabel(pts) {
     const n = Number(pts) || 0;
     if (n >= 1000000) return 'Platinum Card';
@@ -126,10 +259,10 @@ window.PharmaRewardsCatalogue = (() => {
     if (state.loaded) return;
 
     const apiCandidates = [
-      'api/gifts.php',
-      '/PHARMA-FLOW/api/gifts.php',
-      '/api/gifts.php',
-      '../api/gifts.php',
+        'api/gifts.php',
+        '../api/gifts.php',
+        '/api/gifts.php',
+        '/PHARMA-FLOW/api/gifts.php',
     ];
 
     for (const url of apiCandidates) {
@@ -190,12 +323,15 @@ window.PharmaRewardsCatalogue = (() => {
     });
   }
 
-  function buildClaimUrl(gift) {
-    const q = new URLSearchParams({
-      gift: gift.name || '',
-      points: String(Number(gift.points || 0)),
-    });
-    return `#/claim-gift?${q.toString()}`;
+    function buildClaimUrl(gift) {
+        const q = new URLSearchParams({
+            gift: String(gift.name || ''),
+            points: String(Number(gift.points || 0)),
+        });
+        const basePath = window.location.pathname.includes('/gifts')
+          ? window.location.pathname.replace(/\/gifts\/?$/, '/claim-gift')
+          : '/PHARMA-FLOW/public/claim-gift';
+        return `${basePath}?${q.toString()}`;
   }
 
   function getSavedTermsHtml() {
@@ -502,82 +638,122 @@ window.PharmaRewardsCatalogue = (() => {
     `;
   }
 
-  function renderClaimView(container) {
+function renderClaimView(container) {
+    const searchParams = new URLSearchParams(window.location.search || '');
     const hash = window.location.hash || '';
-    const params = new URLSearchParams(hash.includes('?') ? hash.split('?')[1] : '');
-    const giftName = params.get('gift') || state.cartGift?.name || '';
-    const pointsNum = Number(params.get('points') || state.cartGift?.points || 0);
+    const hashParams = new URLSearchParams(hash.includes('?') ? hash.split('?')[1] : '');
+
+    const giftName =
+      searchParams.get('gift') ||
+      hashParams.get('gift') ||
+      state.cartGift?.name ||
+      '';
+    const pointsNum = Number(
+      searchParams.get('points') ||
+      hashParams.get('points') ||
+      state.cartGift?.points ||
+      0
+    );
+
+    const giftDisplayValue =
+      giftName && pointsNum
+        ? `${giftName} (${formatIndianPoints(pointsNum)} pts)`
+        : giftName || '';
 
     container.innerHTML = `
-      <div class="rc-wrap py-2">
-        <a href="#/rewards-catalogue" class="btn btn-outline-secondary btn-sm mb-3">&larr; Back to All Gift Cards</a>
-        <div class="card border-0 shadow-sm rounded-3 p-4" style="max-width: 780px;">
-          <h1 class="h4 fw-bold text-dark mb-1">Claim Your Gift Card</h1>
-          <p class="small text-muted mb-4">Submit partner redemption details for verification and dispatch.</p>
+      <div class="rc-wrap py-3">
+        <div class="card border-0 rounded-3 p-4 p-md-5 bg-white" style="max-width: 760px; margin: 0 auto; border: 1px solid #bfdbfe !important; box-shadow: 0 10px 28px rgba(15, 76, 129, 0.08) !important;">
+          <h1 class="h3 fw-bold mb-2" style="color: #0f4c81;">Claim Your Gift</h1>
+          <p class="small mb-4" style="color: #475569;">
+            Enter your details below and we will contact you about your gift. Dispatch is subject to the scheme&rsquo;s eligibility criteria.
+          </p>
 
           <form id="rcClaimForm" novalidate>
-            <div class="row g-3 mb-3">
-              <div class="col-md-7">
-                <label class="form-label small fw-semibold">Selected Gift Card</label>
-                <input type="text" class="form-control bg-light" name="gift" value="${escapeHtml(giftName)}" readonly required>
-              </div>
-              <div class="col-md-5">
-                <label class="form-label small fw-semibold">Points</label>
-                <input type="text" class="form-control bg-light" value="${pointsNum ? `${formatIndianPoints(pointsNum)} Points` : ''}" readonly>
-                <input type="hidden" name="points" value="${pointsNum}">
-              </div>
-            </div>
-
-            <div class="row g-3 mb-3">
-              <div class="col-md-6">
-                <label class="form-label small fw-semibold">Partner Name *</label>
-                <input type="text" class="form-control" name="partner_name" required>
-              </div>
-              <div class="col-md-6">
-                <label class="form-label small fw-semibold">Partner Code *</label>
-                <input type="text" class="form-control" name="partner_code" required>
-              </div>
-            </div>
-
-            <div class="row g-3 mb-3">
-              <div class="col-md-6">
-                <label class="form-label small fw-semibold">Phone *</label>
-                <input type="tel" class="form-control" name="phone" required>
-              </div>
-              <div class="col-md-6">
-                <label class="form-label small fw-semibold">Email *</label>
-                <input type="email" class="form-control" name="email" required>
-              </div>
+            <div class="mb-3">
+              <label class="form-label fw-semibold small" style="color: #0f172a;">
+                Ledger Name <span style="color: #dc2626;">*</span>
+              </label>
+              <input
+                type="text"
+                class="form-control py-2"
+                name="ledger_name"
+                placeholder="Ledger Name"
+                style="border-color: #cbd5e1;"
+                required
+              >
             </div>
 
             <div class="mb-3">
-              <label class="form-label small fw-semibold">Delivery Address *</label>
-              <textarea class="form-control" name="address" rows="2" required></textarea>
-            </div>
-
-            <div class="row g-3 mb-3">
-              <div class="col-md-4">
-                <label class="form-label small fw-semibold">City *</label>
-                <input type="text" class="form-control" name="city" required>
-              </div>
-              <div class="col-md-4">
-                <label class="form-label small fw-semibold">State *</label>
-                <input type="text" class="form-control" name="state" required>
-              </div>
-              <div class="col-md-4">
-                <label class="form-label small fw-semibold">PIN Code *</label>
-                <input type="text" class="form-control" name="pin_code" maxlength="6" required>
-              </div>
-            </div>
-
-            <div class="form-check mb-4">
-              <input class="form-check-input" type="checkbox" id="rcConsentCheck" name="consent" required>
-              <label class="form-check-label small" for="rcConsentCheck">
-                I confirm my details are accurate and agree to the partner loyalty scheme terms and commercial criteria.
+              <label class="form-label fw-semibold small" style="color: #0f172a;">
+                Party code <span style="color: #dc2626;">*</span>
               </label>
+              <input
+                type="text"
+                class="form-control py-2"
+                name="party_code"
+                placeholder="Party code"
+                style="border-color: #cbd5e1;"
+                required
+              >
             </div>
 
-            <button type="submit" class="btn rc-btn-primary">Submit Claim</button>
+            <div class="mb-3">
+              <label class="form-label fw-semibold small" style="color: #0f172a;">
+                Contact no <span style="color: #dc2626;">*</span>
+              </label>
+              <input
+                type="tel"
+                class="form-control py-2"
+                name="contact_no"
+                placeholder="Contact no"
+                style="border-color: #cbd5e1;"
+                required
+              >
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label fw-semibold small" style="color: #0f172a;">
+                Address <span style="color: #dc2626;">*</span>
+              </label>
+              <textarea
+                class="form-control py-2"
+                name="address"
+                rows="4"
+                placeholder="Address"
+                style="border-color: #cbd5e1;"
+                required
+              ></textarea>
+            </div>
+
+            <div class="mb-4">
+              <label class="form-label fw-semibold small" style="color: #0f172a;">
+                Selected gift <span style="color: #dc2626;">*</span>
+              </label>
+              <input
+                type="text"
+                class="form-control py-2"
+                name="selected_gift"
+                value="${escapeHtml(giftDisplayValue)}"
+                placeholder="Selected gift"
+                style="background-color: #eff6ff; border-color: #93c5fd; color: #0f4c81; font-weight: 600;"
+                readonly
+                required
+              >
+              <input type="hidden" name="gift" value="${escapeHtml(giftName)}">
+              <input type="hidden" name="points" value="${pointsNum}">
+            </div>
+
+            <button
+              type="submit"
+              class="btn px-4 py-2 fw-bold text-white"
+              style="background-color: #0f4c81; border-color: #0f4c81; border-radius: 8px;"
+            >
+              Submit claim request
+            </button>
+
+            <div class="small mt-3" style="color: #475569;">
+              Read the <a href="#/scheme-terms" class="fw-semibold text-decoration-underline" style="color: #0f4c81;">Scheme Terms</a> before you claim.
+            </div>
           </form>
 
           <div id="rcClaimResult" class="mt-3"></div>

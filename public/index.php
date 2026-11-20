@@ -8,13 +8,14 @@ declare(strict_types=1);
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Farlex PharmaFlow — All Services in One Place</title>
+  <base href="/">
   <link rel="stylesheet" href="assets/vendor/bootstrap/css/bootstrap.min.css">
   <link rel="stylesheet" href="assets/vendor/icons/bootstrap-icons.min.css">
   <link rel="stylesheet" href="assets/css/app.css">
   <link rel="stylesheet" href="assets/css/custom-reminder-cards.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <!-- public/index.php (<head> ke andar) -->
-<link rel="stylesheet" href="assets/css/rewards_catalogue.css">
+  <link rel="stylesheet" href="assets/css/rewards_catalogue.css">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
 </head>
@@ -144,6 +145,39 @@ declare(strict_types=1);
         window.PharmaRewardsCatalogue.mount(target, { view: 'catalogue' });
       }
     });
+    (function () {
+      function openRewardsIfNeeded() {
+      const path = window.location.pathname || '';
+      const hash = window.location.hash || '';
+
+      let view = null;
+      if (path.endsWith('/gifts') || hash.startsWith('#/gifts') || hash.startsWith('#/rewards-catalogue')) {
+        view = 'catalogue';
+      } else if (path.endsWith('/claim-gift') || hash.startsWith('#/claim-gift')) {
+        view = 'claim';
+      } else if (hash.startsWith('#/scheme-terms')) {
+        view = 'terms';
+      }
+
+      if (!view || !window.PharmaRewardsCatalogue) return;
+
+      const target =
+        document.querySelector('#giftsContainer') ||
+        document.querySelector('#app') ||
+        document.querySelector('main .container') ||
+        document.querySelector('main') ||
+        document.body;
+
+      window.PharmaRewardsCatalogue.mount(target, { view });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      openRewardsIfNeeded();
+      setTimeout(openRewardsIfNeeded, 80);
+    });
+    window.addEventListener('hashchange', openRewardsIfNeeded);
+    window.addEventListener('popstate', openRewardsIfNeeded);
+  })();
   </script>
 </body>
 </body>
