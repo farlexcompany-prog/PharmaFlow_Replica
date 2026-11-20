@@ -9,3 +9,8 @@ Thumbs.db
 
 # Local environment / temporary uploads if needed
 *.log
+*.pdf binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary

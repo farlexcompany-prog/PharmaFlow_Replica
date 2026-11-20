@@ -126,5 +126,6 @@ declare(strict_types=1);
   <script src="assets/js/contact.js"></script>
   <script src="assets/js/products.js"></script>
   <script src="assets/js/reminder_card.js"></script>
+  <script src="assets/js/fixed_reminder_cards.js"></script>
 </body>
 </html>

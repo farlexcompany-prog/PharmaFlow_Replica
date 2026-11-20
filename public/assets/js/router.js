@@ -52,17 +52,14 @@ window.PharmaRouter = (() => {
     '/reminder-cards': {
       title: 'Reminder Cards — Farlex PharmaFlow',
       render: (el) => {
-        if (window.PharmaReminderCard) {
-          window.PharmaReminderCard.mount(el);
+        if (window.PharmaFixedReminderCards) {
+          window.PharmaFixedReminderCards.mount(el);
         } else {
-          el.innerHTML = `
-            <div class="pf-card p-4">
-              <h4 class="fw-bold mb-2">Reminder Cards</h4>
-              <p class="text-muted mb-0">Reminder Card builder module is being initialized.</p>
-            </div>`;
+          el.innerHTML = `<div class="alert alert-warning">Fixed Reminder Cards module is not loaded.</div>`;
         }
       },
     },
+    
     '/custom-reminder-cards': {
       title: 'Custom Reminder Cards — Farlex PharmaFlow',
       render: (el) => {
@@ -72,12 +69,13 @@ window.PharmaRouter = (() => {
           el.innerHTML = `
             <div class="pf-card p-4">
               <h4 class="fw-bold mb-2">Custom Reminder Cards</h4>
-              <p class="text-muted mb-0">Custom Reminder Card builder module is being initialized.</p>
+              <p class="text-muted mb-0">Custom reminder card builder module is being initialized.</p>
             </div>`;
         }
       },
     },
-  };
+    }
+  
 
   function getRoutePath() {
     const hash = window.location.hash || '';
