@@ -17,6 +17,7 @@ window.PharmaReminderCard = (() => {
     activeSlotIndex: 0,
     productsCache: [],
     loadingProducts: false,
+    productError: '',
   };
 
   function escapeHtml(str) {
@@ -28,6 +29,10 @@ window.PharmaReminderCard = (() => {
       .replace(/'/g, '&#039;');
   }
 
+  function escapeHtmlAttr(str) {
+    return escapeHtml(str);
+  }
+
   function ensureSlotCapacity(count) {
     while (state.slots.length < count) {
       state.slots.push(null);
@@ -37,13 +42,43 @@ window.PharmaReminderCard = (() => {
     }
   }
 
+  function normalizeProduct(item, idx = 0) {
+    if (!item || typeof item !== 'object') return null;
+    const name = item.name || item.product_name || item.title || item.brand_name || '';
+    if (!name) return null;
+
+    return {
+      id: item.id ?? item.product_id ?? idx + 1,
+      name: String(name).trim(),
+      composition: String(item.composition || item.salt || item.generic_name || item.description || '').trim(),
+      packing: String(item.packing || item.pack || item.unit || '').trim(),
+      mrp: item.mrp ?? null,
+      mrp_note: item.mrp_note || '',
+    };
+  }
+
+  function extractProductArray(data) {
+    if (Array.isArray(data)) return data;
+    if (!data || typeof data !== 'object') return [];
+    if (Array.isArray(data.products)) return data.products;
+    if (Array.isArray(data.data)) return data.data;
+    if (Array.isArray(data.items)) return data.items;
+    if (data.data && typeof data.data === 'object' && Array.isArray(data.data.products)) {
+      return data.data.products;
+    }
+    return [];
+  }
+
   async function loadProducts(search = '') {
     state.loadingProducts = true;
+    state.productError = '';
+
+    const trimmed = search.trim();
     const params = new URLSearchParams({
-      search: search.trim(),
-      q: search.trim(),
+      search: trimmed,
+      q: trimmed,
       page: '1',
-      per_page: '30',
+      per_page: '50',
     });
 
     const pathname = window.location.pathname || '/';
@@ -57,23 +92,51 @@ window.PharmaReminderCard = (() => {
       `../api/products.php?${params}`,
     ]));
 
+    let lastStatus = '';
+
     for (const url of urls) {
       try {
         const res = await fetch(url);
-        const text = (await res.text()).trim();
-        if (!text || text.startsWith('<!') || text.startsWith('<html')) continue;
-        const data = JSON.parse(text);
-        if (res.ok && data.ok && Array.isArray(data.products)) {
-          state.productsCache = data.products;
+        lastStatus = `${res.status}`;
+        const rawText = (await res.text()).trim();
+        if (!rawText) continue;
+
+        const cleanText = rawText.replace(/^\uFEFF/, '');
+        if (cleanText.startsWith('<!DOCTYPE') || cleanText.startsWith('<html')) continue;
+
+        const parsed = JSON.parse(cleanText);
+        if (parsed && parsed.ok === false) {
+          state.productError = parsed.error || parsed.message || 'Products API returned ok: false';
+          continue;
+        }
+
+        const rawList = extractProductArray(parsed);
+        const normalized = rawList.map(normalizeProduct).filter(Boolean);
+
+        if (res.ok && normalized.length > 0) {
+          state.productsCache = normalized;
+          state.productError = '';
           state.loadingProducts = false;
           return;
         }
-      } catch (_) {
-        // Try next candidate
+
+        if (res.ok && Array.isArray(rawList) && rawList.length === 0) {
+          state.productsCache = [];
+          state.productError = trimmed
+            ? `No products matched "${trimmed}".`
+            : 'api/products.php returned 0 products.';
+          state.loadingProducts = false;
+          return;
+        }
+      } catch (err) {
+        lastStatus = err?.message || 'fetch failed';
       }
     }
 
     state.productsCache = [];
+    if (!state.productError) {
+      state.productError = `Products load nahi ho paaye (${lastStatus || 'API unreachable'}).`;
+    }
     state.loadingProducts = false;
   }
 
@@ -83,6 +146,30 @@ window.PharmaReminderCard = (() => {
       return `₹${Number(p.mrp).toFixed(2)}`;
     }
     return p.mrp_note || 'MRP on Request';
+  }
+
+  function renderSlotSelectHtml(slotIndex, selectedName = '') {
+    const safeSelected = String(selectedName ?? '');
+    const options = [
+      `<option value="">-- Select Product for Slot ${slotIndex + 1} --</option>`,
+      ...state.productsCache.map((p, idx) => {
+        const nameStr = String(p.name ?? '');
+        const compStr = String(p.composition ?? '');
+        const isSelected = nameStr !== '' && nameStr === safeSelected ? 'selected' : '';
+        const label = compStr ? `${nameStr} (${compStr})` : nameStr;
+        return `<option value="${escapeHtmlAttr(nameStr)}" data-prod-idx="${idx}" ${isSelected}>${escapeHtml(label)}</option>`;
+      }),
+    ];
+
+    return `
+      <select
+        class="form-select form-select-sm mb-2 farlex-slot-product-select"
+        data-slot-select-index="${slotIndex}"
+        aria-label="Select product for slot ${slotIndex + 1}"
+      >
+        ${options.join('')}
+      </select>
+    `;
   }
 
   function renderSlotsGrid() {
@@ -102,33 +189,37 @@ window.PharmaReminderCard = (() => {
 
       if (!prod) {
         items.push(`
-          <div class="${colClass}">
-            <div class="p-3 rounded-3 bg-light ${borderClass} h-100 d-flex flex-column justify-content-between" style="min-height: 145px;">
-              <div class="d-flex justify-content-between align-items-center">
-                <span class="badge ${isSelected ? 'bg-primary' : 'bg-secondary-subtle text-dark'}">Slot ${i + 1}</span>
-                <button type="button" class="btn btn-sm btn-link p-0 text-decoration-none" data-select-slot="${i}">
-                  ${isSelected ? 'Active' : 'Select'}
-                </button>
+          <div class="${colClass}" data-slot-index="${i}">
+            <div class="p-3 rounded-3 bg-light ${borderClass} h-100 d-flex flex-column justify-content-between" style="min-height: 155px;">
+              <div>
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <span class="badge ${isSelected ? 'bg-primary' : 'bg-secondary-subtle text-dark'}">Slot ${i + 1}</span>
+                  <button type="button" class="btn btn-sm btn-link p-0 text-decoration-none" data-select-slot="${i}">
+                    ${isSelected ? 'Active' : 'Select'}
+                  </button>
+                </div>
+                ${renderSlotSelectHtml(i, '')}
+                <div class="text-center text-muted small my-1">
+                  Pick from dropdown or click a product on the right
+                </div>
               </div>
-              <div class="text-center text-muted small my-2">
-                Click a product on the right to fill Slot ${i + 1}
-              </div>
-              <div class="text-end small text-muted">Empty</div>
+              <div class="text-end small text-muted pt-1">Empty</div>
             </div>
           </div>
         `);
       } else {
         items.push(`
-          <div class="${colClass}">
-            <div class="p-3 rounded-3 bg-white ${borderClass} h-100 d-flex flex-column justify-content-between" style="min-height: 145px;">
+          <div class="${colClass}" data-slot-index="${i}">
+            <div class="p-3 rounded-3 bg-white ${borderClass} h-100 d-flex flex-column justify-content-between" style="min-height: 155px;">
               <div>
-                <div class="d-flex justify-content-between align-items-start gap-2 mb-1">
+                <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
                   <span class="badge ${isSelected ? 'bg-primary' : 'bg-info-subtle text-dark'}">Slot ${i + 1}</span>
                   <div class="d-flex gap-1">
                     <button type="button" class="btn btn-xs btn-outline-secondary py-0 px-1 small" data-select-slot="${i}" title="Select slot">Pick</button>
                     <button type="button" class="btn btn-xs btn-outline-danger py-0 px-1 small" data-clear-slot="${i}" title="Remove product">×</button>
                   </div>
                 </div>
+                ${renderSlotSelectHtml(i, prod.name)}
                 <div class="fw-bold text-dark small">${escapeHtml(prod.name)}</div>
                 <div class="text-muted" style="font-size: 0.78rem; line-height: 1.3;">
                   ${escapeHtml(prod.composition || '')}
@@ -152,7 +243,7 @@ window.PharmaReminderCard = (() => {
       return `<div class="text-center py-4"><div class="spinner-border spinner-border-sm text-primary"></div></div>`;
     }
     if (!state.productsCache.length) {
-      return `<div class="text-muted small text-center py-3">No products found. Try another search keyword.</div>`;
+      return `<div class="text-muted small text-center py-3">${escapeHtml(state.productError || 'No products found. Try another search keyword.')}</div>`;
     }
 
     return state.productsCache.map((p, idx) => `
@@ -253,8 +344,74 @@ window.PharmaReminderCard = (() => {
     }
   }
 
-  function printCard() {
+  function printStyledReminderCard(sheetEl, meta = {}) {
+    if (!sheetEl) {
+      window.print();
+      return;
+    }
+
+    const company = meta.company || 'Farlex Pharmaceuticals Pvt. Ltd.';
+    const website = meta.website || 'www.farlex.in';
+    const phone = meta.phone || '+91-9875998089';
+    const email = meta.email || 'Info@farlex.in';
+    const address = meta.address || '5th Floor, Plot No.7, IT Park, Sector-22 Panchkula, Haryana-134109';
+    const title = meta.title || state.cardTitle || 'Farlex Promotional Reminder Card';
+
+    const headerDiv = document.createElement('div');
+    headerDiv.className = 'farlex-rc-print-header';
+    headerDiv.innerHTML = `
+      <div>
+        <div style="font-weight:700;font-size:15px;color:#0f172a;">${escapeHtml(company)}</div>
+        <div style="font-size:12px;color:#0d6efd;font-weight:600;">${escapeHtml(title)}</div>
+      </div>
+      <div style="text-align:right;font-size:11px;color:#475569;">
+        <div><strong>Web:</strong> ${escapeHtml(website)}</div>
+        <div><strong>Tel:</strong> ${escapeHtml(phone)}</div>
+      </div>
+    `;
+
+    const footerDiv = document.createElement('div');
+    footerDiv.className = 'farlex-rc-print-footer';
+    footerDiv.innerHTML = `
+      <span>${escapeHtml(address)}</span>
+      <span><strong>Email:</strong> ${escapeHtml(email)}</span>
+    `;
+
+    const slotEls = Array.from(sheetEl.querySelectorAll('[data-slot-index]'));
+    slotEls.forEach((el) => el.classList.add('farlex-rc-print-slot'));
+
+    sheetEl.prepend(headerDiv);
+    sheetEl.appendChild(footerDiv);
+
+    const cleanup = () => {
+      headerDiv.remove();
+      footerDiv.remove();
+      slotEls.forEach((el) => el.classList.remove('farlex-rc-print-slot'));
+      window.removeEventListener('afterprint', cleanup);
+    };
+
+    window.addEventListener('afterprint', cleanup);
     window.print();
+    setTimeout(cleanup, 1000);
+  }
+
+  function printCard(cardEl) {
+    printStyledReminderCard(cardEl, { title: state.cardTitle });
+  }
+
+  function assignProductToSlot(slotIdx, prod) {
+    const cfg = LAYOUTS[state.layoutKey] || LAYOUTS['2x2'];
+    state.slots[slotIdx] = prod || null;
+
+    let nextIdx = (slotIdx + 1) % cfg.slots;
+    for (let offset = 1; offset <= cfg.slots; offset++) {
+      const candidate = (slotIdx + offset) % cfg.slots;
+      if (!state.slots[candidate]) {
+        nextIdx = candidate;
+        break;
+      }
+    }
+    state.activeSlotIndex = nextIdx;
   }
 
   async function mount(container) {
@@ -373,7 +530,33 @@ window.PharmaReminderCard = (() => {
       updateDoctorLine();
     });
 
-    container.querySelector('#rcSlotsContainer')?.addEventListener('click', (e) => {
+    const slotsContainerEl = container.querySelector('#rcSlotsContainer');
+
+    slotsContainerEl?.addEventListener('change', (e) => {
+      const selectEl = e.target.closest('.farlex-slot-product-select');
+      if (!selectEl) return;
+      const slotIdx = Number(selectEl.dataset.slotSelectIndex);
+      if (Number.isNaN(slotIdx)) return;
+
+      if (!selectEl.value) {
+        state.slots[slotIdx] = null;
+        rerenderSlots();
+        return;
+      }
+
+      const chosenOption = selectEl.options[selectEl.selectedIndex];
+      const prodIdx = Number(chosenOption?.dataset.prodIdx);
+      const chosen = !Number.isNaN(prodIdx)
+        ? state.productsCache[prodIdx]
+        : state.productsCache.find((item) => String(item.name || '') === selectEl.value);
+
+      if (chosen) {
+        assignProductToSlot(slotIdx, chosen);
+        rerenderSlots();
+      }
+    });
+
+    slotsContainerEl?.addEventListener('click', (e) => {
       const selectBtn = e.target.closest('[data-select-slot]');
       if (selectBtn) {
         state.activeSlotIndex = Number(selectBtn.dataset.selectSlot) || 0;
@@ -397,18 +580,7 @@ window.PharmaReminderCard = (() => {
       const chosen = state.productsCache[idx];
       if (!chosen) return;
 
-      const cfg = LAYOUTS[state.layoutKey] || LAYOUTS['2x2'];
-      state.slots[state.activeSlotIndex] = chosen;
-
-      let nextIdx = (state.activeSlotIndex + 1) % cfg.slots;
-      for (let offset = 1; offset <= cfg.slots; offset++) {
-        const candidate = (state.activeSlotIndex + offset) % cfg.slots;
-        if (!state.slots[candidate]) {
-          nextIdx = candidate;
-          break;
-        }
-      }
-      state.activeSlotIndex = nextIdx;
+      assignProductToSlot(state.activeSlotIndex, chosen);
       rerenderSlots();
     });
 
@@ -420,6 +592,7 @@ window.PharmaReminderCard = (() => {
         await loadProducts(val);
         const listEl = container.querySelector('#rcProductList');
         if (listEl) listEl.innerHTML = renderProductPickerList();
+        rerenderSlots();
       }, 200);
     });
 
@@ -434,7 +607,7 @@ window.PharmaReminderCard = (() => {
     });
 
     container.querySelector('#rcPrintBtn')?.addEventListener('click', () => {
-      printCard();
+      printCard(container.querySelector('#rcPreviewCard'));
     });
 
     await loadProducts('');
@@ -442,6 +615,7 @@ window.PharmaReminderCard = (() => {
     if (listEl) {
       listEl.innerHTML = renderProductPickerList();
     }
+    rerenderSlots();
   }
 
   return { mount };
