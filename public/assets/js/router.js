@@ -1,18 +1,131 @@
 window.PharmaRouter = (() => {
+  let homeStylesInjected = false;
+
+  async function renderFarlexHome(el) {
+    el.innerHTML = `
+      <div class="pf-card p-4 text-center text-muted">
+        Loading Farlex Pharmaceuticals Home...
+      </div>`;
+
+    try {
+      const res = await fetch('home.html', { cache: 'no-store' });
+      if (!res.ok) {
+        throw new Error(`Could not load home.html (HTTP ${res.status})`);
+      }
+
+      const htmlText = await res.text();
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(htmlText, 'text/html');
+
+      if (!document.getElementById('pf-tailwind-cdn')) {
+        window.tailwind = window.tailwind || {};
+        window.tailwind.config = {
+          corePlugins: {
+            preflight: false,
+          },
+        };
+        const tw = document.createElement('script');
+        tw.id = 'pf-tailwind-cdn';
+        tw.src = 'https://cdn.tailwindcss.com';
+        document.head.appendChild(tw);
+      }
+
+      if (!homeStylesInjected) {
+        doc.querySelectorAll('style').forEach((styleTag, idx) => {
+          const styleEl = document.createElement('style');
+          styleEl.id = `pf-home-style-${idx}`;
+          styleEl.textContent = styleTag.textContent || '';
+          document.head.appendChild(styleEl);
+        });
+        homeStylesInjected = true;
+      }
+
+      const bodyClone = doc.body.cloneNode(true);
+      const inlineScripts = [];
+
+      bodyClone.querySelectorAll('script').forEach((sc) => {
+        if (!sc.src && sc.textContent && sc.textContent.trim()) {
+          inlineScripts.push(sc.textContent);
+        }
+        sc.remove();
+      });
+
+      // Remove duplicate top bar (first child div in body), sticky header, and footer
+      const firstDiv = bodyClone.querySelector('body > div, div');
+      if (firstDiv && firstDiv.querySelector('a[href^="tel:"]')) {
+        firstDiv.remove();
+      }
+      bodyClone.querySelectorAll('header').forEach((node) => node.remove());
+      // Remove fixed floating side buttons inside home.html so they don't overlap PharmaFlow shell
+      bodyClone.querySelectorAll('.fixed').forEach((fixedEl) => fixedEl.remove());
+
+      el.innerHTML = `
+        <div class="farlex-home-merged bg-white rounded-4 border p-3 p-md-4">
+          ${bodyClone.innerHTML}
+        </div>`;
+
+      const runInlineScripts = () => {
+        // Expose safe fallback handlers before running scripts
+        window.setSlide = window.setSlide || (() => {});
+        window.nextSlide = window.nextSlide || (() => {});
+        window.prevSlide = window.prevSlide || (() => {});
+        window.openLightbox = window.openLightbox || (() => {});
+        window.closeLightbox = window.closeLightbox || (() => {});
+
+        inlineScripts.forEach((code, idx) => {
+          try {
+            const safeCode = `
+              (function () {
+                const _byId = (id) => document.getElementById(id);
+                ${code}
+                if (typeof setSlide === 'function') window.setSlide = setSlide;
+                if (typeof nextSlide === 'function') window.nextSlide = nextSlide;
+                if (typeof prevSlide === 'function') window.prevSlide = prevSlide;
+                if (typeof openLightbox === 'function') window.openLightbox = openLightbox;
+                if (typeof closeLightbox === 'function') window.closeLightbox = closeLightbox;
+              })();
+            `;
+            new Function(safeCode)();
+          } catch (err) {
+            console.warn(`Home inline script #${idx} skipped/handled:`, err.message);
+          }
+        });
+
+        // Safe year & icons initialization even if footer was removed
+        const yearEl = document.getElementById('yearNow');
+        if (yearEl) {
+          yearEl.textContent = String(new Date().getFullYear());
+        }
+        if (window.lucide && typeof window.lucide.createIcons === 'function') {
+          window.lucide.createIcons();
+        }
+      };
+
+      if (window.lucide && typeof window.lucide.createIcons === 'function') {
+        runInlineScripts();
+      } else {
+        const lucideScript = document.createElement('script');
+        lucideScript.src = 'https://unpkg.com/lucide@latest';
+        lucideScript.onload = runInlineScripts;
+        lucideScript.onerror = runInlineScripts;
+        document.body.appendChild(lucideScript);
+      }
+    } catch (err) {
+      console.error('Failed to render home.html:', err);
+      el.innerHTML = `
+        <div class="pf-card p-4">
+          <div class="alert alert-warning mb-0">
+            Unable to load <code>home.html</code>: ${err.message}.
+          </div>
+        </div>`;
+    }
+  }
+
   const routes = {
     '/': {
-      title: 'Home — PharmaFlow',
+      title: 'Best Pharma Franchise Company | Monopoly Pharma Company — Farlex PharmaFlow',
       render: (el) => {
-        el.innerHTML = `
-          <div class="pf-card p-4">
-            <h4 class="fw-bold mb-2">Welcome to PharmaFlow</h4>
-            <p class="text-muted mb-3">Access product catalogs, promotional tools, downloads, certificates, and portals in one place.</p>
-            <div class="d-flex flex-wrap gap-2">
-              <a href="/downloads" data-link class="btn btn-primary btn-sm"><i class="bi bi-download me-1"></i>Open Downloads</a>
-              <a href="/products" data-link class="btn btn-outline-primary btn-sm"><i class="bi bi-capsule me-1"></i>Browse Products</a>
-              <a href="/contact" data-link class="btn btn-outline-secondary btn-sm"><i class="bi bi-envelope me-1"></i>Contact Us</a>
-            </div>
-          </div>`;
+        renderFarlexHome(el);
       },
     },
     '/downloads': {
@@ -32,16 +145,16 @@ window.PharmaRouter = (() => {
       },
     },
     '/gifts': {
-        title: 'Gift Cards — Farlex Rewards',
-        render: (el, params) => {
-          if (window.PharmaRewardsCatalogue) {
-             window.PharmaRewardsCatalogue.mount(el, { view: 'catalogue', params });
-           } else if (window.PharmaGifts) {
-            window.PharmaGifts.mount(el);
-           } else {
-              el.innerHTML = '<div class="alert alert-warning">Gift module not loaded. Check script path in public/index.php.</div>';
-          }
-         },
+      title: 'Gift Cards — Farlex Rewards',
+      render: (el, params) => {
+        if (window.PharmaRewardsCatalogue) {
+          window.PharmaRewardsCatalogue.mount(el, { view: 'catalogue', params });
+        } else if (window.PharmaGifts) {
+          window.PharmaGifts.mount(el);
+        } else {
+          el.innerHTML = '<div class="alert alert-warning">Gift module not loaded. Check script path in public/index.php.</div>';
+        }
+      },
     },
     '/contact': {
       title: 'Contact Us — Farlex PharmaFlow',
@@ -71,8 +184,6 @@ window.PharmaRouter = (() => {
         }
       },
     },
-
-// public/assets/js/router.js ke routes object mein add karein:
     '/rewards-catalogue': {
       title: 'Partner Rewards – Gift Catalogue | Farlex Rewards',
       render: (el, params) => {
@@ -105,8 +216,6 @@ window.PharmaRouter = (() => {
         }
       },
     },
-
-    
     '/custom-reminder-cards': {
       title: 'Custom Reminder Cards — Farlex PharmaFlow',
       render: (el) => {
@@ -121,13 +230,12 @@ window.PharmaRouter = (() => {
         }
       },
     },
-    }
-  
+  };
 
   function getRoutePath() {
     const hash = window.location.hash || '';
     if (hash.startsWith('#/')) {
-      let hPath = hash.slice(1);
+      let hPath = hash.slice(1).split('?')[0];
       if (hPath.length > 1 && hPath.endsWith('/')) hPath = hPath.slice(0, -1);
       return hPath || '/';
     }
@@ -149,7 +257,8 @@ window.PharmaRouter = (() => {
 
   function navigateTo(url) {
     const cleanUrl = url.replace(/^#/, '');
-    if (cleanUrl === window.location.pathname) return;
+    const currentFull = window.location.pathname + window.location.search;
+    if (cleanUrl === currentFull) return;
     window.history.pushState({}, '', cleanUrl);
     resolve();
   }

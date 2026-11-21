@@ -7,15 +7,14 @@ declare(strict_types=1);
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Farlex PharmaFlow — All Services in One Place</title>
+  <title>Best Pharma Franchise Company | Monopoly Pharma Company — Farlex PharmaFlow</title>
   <base href="/">
   <link rel="stylesheet" href="assets/vendor/bootstrap/css/bootstrap.min.css">
   <link rel="stylesheet" href="assets/vendor/icons/bootstrap-icons.min.css">
   <link rel="stylesheet" href="assets/css/app.css">
   <link rel="stylesheet" href="assets/css/custom-reminder-cards.css">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <!-- public/index.php (<head> ke andar) -->
   <link rel="stylesheet" href="assets/css/rewards_catalogue.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
 </head>
@@ -109,11 +108,6 @@ declare(strict_types=1);
 
       <!-- Main Dynamic Content -->
       <main class="pf-main flex-grow-1 p-3 p-md-4">
-        <!-- <div id="pfAlertBanner" class="alert alert-info py-2 px-3 small mb-3 d-flex align-items-center justify-content-between" role="alert">
-          <span><strong>Farlex Pharmaceuticals Pvt. Ltd.</strong> — Local Replica Mode (`www.farlex.in` • Panchkula, Haryana).</span>
-          <button type="button" class="btn-close btn-sm" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div> -->
-
         <div id="app-view"></div>
       </main>
     </div>
@@ -131,54 +125,90 @@ declare(strict_types=1);
   <script src="assets/js/products.js"></script>
   <script src="assets/js/reminder_card.js"></script>
   <script src="assets/js/fixed_reminder_cards.js"></script>
-  <!-- public/index.php (</body> se pehle) -->
   <script src="assets/js/rewards_catalogue.js"></script>
+
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const target =
-        document.querySelector('#giftsContainer') ||
-        document.querySelector('#app') ||
-        document.querySelector('main .container') ||
-        document.querySelector('main');
+    // (function () {
+    //   const appView = document.getElementById('app-view');
 
-      if (target && window.PharmaRewardsCatalogue) {
-        window.PharmaRewardsCatalogue.mount(target, { view: 'catalogue' });
-      }
-    });
-    (function () {
-      function openRewardsIfNeeded() {
-      const path = window.location.pathname || '';
-      const hash = window.location.hash || '';
+    //   function getRouteKey() {
+    //     const path = (window.location.pathname || '/').toLowerCase().replace(/\/+$/, '') || '/';
+    //     const hash = (window.location.hash || '').toLowerCase();
 
-      let view = null;
-      if (path.endsWith('/gifts') || hash.startsWith('#/gifts') || hash.startsWith('#/rewards-catalogue')) {
-        view = 'catalogue';
-      } else if (path.endsWith('/claim-gift') || hash.startsWith('#/claim-gift')) {
-        view = 'claim';
-      } else if (hash.startsWith('#/scheme-terms')) {
-        view = 'terms';
-      }
+    //     if (path.endsWith('/gifts') || path.endsWith('/gift') || hash.startsWith('#/gifts') || hash.startsWith('#/rewards-catalogue')) {
+    //       return 'gifts';
+    //     }
+    //     if (path.endsWith('/claim-gift') || hash.startsWith('#/claim-gift')) {
+    //       return 'claim';
+    //     }
+    //     if (hash.startsWith('#/scheme-terms')) {
+    //       return 'terms';
+    //     }
+    //     if (path === '/' || path.endsWith('/index.php') || hash === '' || hash === '#' || hash === '#/') {
+    //       return 'home';
+    //     }
+    //     return 'other';
+    //   }
 
-      if (!view || !window.PharmaRewardsCatalogue) return;
+    //   async function loadHomeIntoAppView() {
+    //     if (!appView) return;
+    //     // Agar router.js ne pehle se kuch render kiya hai toh tabhi home load karo jab empty ho ya home route ho
+    //     try {
+    //       const res = await fetch('home.html', { cache: 'no-store' });
+    //       if (!res.ok) return;
+    //       const htmlText = await res.text();
+    //       const parser = new DOMParser();
+    //       const doc = parser.parseFromString(htmlText, 'text/html');
 
-      const target =
-        document.querySelector('#giftsContainer') ||
-        document.querySelector('#app') ||
-        document.querySelector('main .container') ||
-        document.querySelector('main') ||
-        document.body;
+    //       // <body> ke andar ka content uthao (scripts alag se chalayenge)
+    //       const bodyClone = doc.body.cloneNode(true);
+    //       const scripts = [...bodyClone.querySelectorAll('script')];
+    //       scripts.forEach((s) => s.remove());
 
-      window.PharmaRewardsCatalogue.mount(target, { view });
-    }
+    //       appView.innerHTML = bodyClone.innerHTML;
 
-    document.addEventListener('DOMContentLoaded', () => {
-      openRewardsIfNeeded();
-      setTimeout(openRewardsIfNeeded, 80);
-    });
-    window.addEventListener('hashchange', openRewardsIfNeeded);
-    window.addEventListener('popstate', openRewardsIfNeeded);
-  })();
+    //       for (const oldScript of scripts) {
+    //         const s = document.createElement('script');
+    //         if (oldScript.src) {
+    //           s.src = oldScript.src;
+    //           document.body.appendChild(s);
+    //         } else {
+    //           try {
+    //             new Function(oldScript.textContent || '')();
+    //           } catch (err) {
+    //             console.error('Home script error:', err);
+    //           }
+    //         }
+    //       }
+    //     } catch (err) {
+    //       console.error('Failed to load home.html:', err);
+    //     }
+    //   }
+
+    //   function handleRouteView() {
+    //     const route = getRouteKey();
+    //     if (route === 'home') {
+    //       setTimeout(() => {
+    //         if (appView && appView.innerHTML.trim() === '') {
+    //           loadHomeIntoAppView();
+    //         }
+    //       }, 120);
+    //     } else if ((route === 'gifts' || route === 'claim' || route === 'terms') && window.PharmaRewardsCatalogue && appView) {
+    //       const viewName = route === 'claim' ? 'claim' : route === 'terms' ? 'terms' : 'catalogue';
+    //       window.PharmaRewardsCatalogue.mount(appView, { view: viewName });
+    //     }
+    //   }
+
+    //   document.addEventListener('DOMContentLoaded', () => {
+    //     handleRouteView();
+    //     if (getRouteKey() === 'home') {
+    //       setTimeout(loadHomeIntoAppView, 200);
+    //     }
+    //   });
+
+    //   window.addEventListener('hashchange', handleRouteView);
+    //   window.addEventListener('popstate', handleRouteView);
+    // })();
   </script>
-</body>
 </body>
 </html>
