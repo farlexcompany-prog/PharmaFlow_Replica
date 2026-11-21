@@ -58,9 +58,21 @@ window.PharmaRewardsCatalogue = (() => {
     return n.toLocaleString('en-IN');
   }
 
-  (function () {
-  if (window.__farlexClaimBound) return;
-  window.__farlexClaimBound = true;
+  function isGiftCatalogueContext() {
+    const path = (window.location.pathname || '/').toLowerCase().replace(/\/+$/, '') || '/';
+    const hash = (window.location.hash || '').toLowerCase();
+    const isRewardsHash =
+      hash.startsWith('#/rewards-catalogue') ||
+      hash.startsWith('#/gift') ||
+      hash.startsWith('#/claim-gift') ||
+      hash.startsWith('#/scheme-terms');
+    const isRewardsPath =
+      path.endsWith('/gift') ||
+      path.endsWith('/gifts') ||
+      path.endsWith('/claim-gift') ||
+      path.endsWith('/rewards-catalogue');
+    return isRewardsHash || isRewardsPath ;
+  }
 
   function getClaimEndpoint() {
     const base = document.querySelector('base')?.getAttribute('href') || '/';
@@ -79,45 +91,58 @@ window.PharmaRewardsCatalogue = (() => {
     return null;
   }
 
-  function showClaimFeedback(form, message, isError = false) {
-    let box = form.querySelector('.claim-feedback-msg');
-    if (!box) {
-      box = document.createElement('div');
-      box.className = 'claim-feedback-msg';
-      box.style.marginTop = '12px';
-      box.style.padding = '10px 14px';
-      box.style.borderRadius = '8px';
-      box.style.fontSize = '14px';
-      box.style.fontWeight = '500';
-      form.appendChild(box);
-    }
-    box.textContent = message;
-    box.style.background = isError ? '#fef2f2' : '#ecfdf5';
-    box.style.color = isError ? '#991b1b' : '#065f46';
-    box.style.border = isError ? '1px solid #fecaca' : '1px solid #a7f3d0';
-  }
-
-  async function submitClaim(form) {
-    if (!form || form.dataset.submitting === '1') return;
-
-    const ledgerEl = findFormField(form, ['ledger_name', 'ledgerName', 'partner_name', 'ledger-name']);
-    const partyEl  = findFormField(form, ['party_code', 'partyCode', 'partner_code', 'party-code']);
-    const phoneEl  = findFormField(form, ['contact_no', 'contactNo', 'phone', 'contact-no']);
-    const addrEl   = findFormField(form, ['address', 'claim_address', 'claim-address']);
-    const giftEl   = findFormField(form, ['selected_gift', 'selectedGift', 'gift', 'selected-gift']);
-
-    const payload = {
-      ledger_name: String(ledgerEl?.value || '').trim(),
-      party_code: String(partyEl?.value || '').trim(),
-      contact_no: String(phoneEl?.value || '').trim(),
-      address: String(addrEl?.value || '').trim(),
-      selected_gift: String(giftEl?.value || '').trim(),
-    };
-
-    if (!payload.ledger_name || !payload.party_code || !payload.contact_no || !payload.address || !payload.selected_gift) {
-      showClaimFeedback(form, 'Please fill Ledger Name, Party code, Contact no, Address, and Selected gift.', true);
+  function renderClaimAlert(form, html, isError = false) {
+    const container = form.closest('.rc-wrap') || form.parentElement || document;
+    const box = container.querySelector('#rcClaimResult');
+    if (box) {
+      box.innerHTML = html;
       return;
     }
+    let fallback = form.querySelector('.claim-feedback-msg');
+    if (!fallback) {
+      fallback = document.createElement('div');
+      fallback.className = 'claim-feedback-msg mt-3';
+      form.appendChild(fallback);
+    }
+    fallback.innerHTML = html;
+    fallback.style.color = isError ? '#991b1b' : '#065f46';
+  }
+
+  async function submitClaimForm(form) {
+    if (!form || form.dataset.submitting === '1') return;
+
+    const fd = new FormData(form);
+    const ledgerEl = findFormField(form, ['ledger_name', 'ledgerName', 'partner_name']);
+    const partyEl = findFormField(form, ['party_code', 'partyCode', 'partner_code']);
+    const phoneEl = findFormField(form, ['contact_no', 'contactNo', 'phone']);
+    const addrEl = findFormField(form, ['address', 'claim_address']);
+    const giftEl = findFormField(form, ['gift', 'selected_gift', 'selectedGift']);
+    const pointsEl = findFormField(form, ['points']);
+
+    const ledgerName = String(ledgerEl?.value ?? fd.get('ledger_name') ?? '').trim();
+    const partyCode = String(partyEl?.value ?? fd.get('party_code') ?? '').trim();
+    const contactNo = String(phoneEl?.value ?? fd.get('contact_no') ?? '').trim();
+    const address = String(addrEl?.value ?? fd.get('address') ?? '').trim();
+    const rawGift = String(giftEl?.value ?? fd.get('gift') ?? fd.get('selected_gift') ?? '').trim();
+    const points = Number(pointsEl?.value ?? fd.get('points') ?? 0) || 0;
+
+    if (!ledgerName || !partyCode || !contactNo || !address || !rawGift) {
+      renderClaimAlert(
+        form,
+        `<div class="alert alert-danger small mb-0">Please fill all required (*) fields before submitting your claim request.</div>`,
+        true
+      );
+      return;
+    }
+
+    const payload = {
+      ledger_name: ledgerName,
+      party_code: partyCode,
+      contact_no: contactNo,
+      address: address,
+      selected_gift: rawGift,
+      points: points,
+    };
 
     const btn = form.querySelector('button[type="submit"], input[type="submit"], .claim-submit-btn');
     const prevText = btn ? btn.textContent : '';
@@ -139,19 +164,30 @@ window.PharmaRewardsCatalogue = (() => {
       try {
         data = JSON.parse(raw);
       } catch (_) {
-        throw new Error(`Invalid response: ${raw.slice(0, 120)}`);
+        throw new Error(`Invalid response: ${raw.slice(0, 140)}`);
       }
 
       if (!res.ok || !data.ok) {
-        showClaimFeedback(form, data.error || 'Could not submit claim.', true);
-        return;
+        throw new Error(data.error || `Server error (${res.status})`);
       }
 
-      showClaimFeedback(form, `Claim #${data.claim_id} submitted successfully!`, false);
+      renderClaimAlert(
+        form,
+        `
+          <div class="alert alert-info border-primary small mb-0" style="background:#eff6ff; color:#0f4c81;">
+            <strong>Claim request submitted!</strong> Claim ID <strong>#${escapeHtml(String(data.claim_id || ''))}</strong> recorded for <strong>${escapeHtml(rawGift)}</strong> under <strong>${escapeHtml(ledgerName)}</strong> (${escapeHtml(partyCode)}).
+          </div>
+        `,
+        false
+      );
       form.reset();
     } catch (err) {
       console.error('Claim error:', err);
-      showClaimFeedback(form, err.message || 'Server/network error while submitting claim.', true);
+      renderClaimAlert(
+        form,
+        `<div class="alert alert-danger small mb-0"><strong>Submission failed:</strong> ${escapeHtml(err.message || 'Could not submit claim.')}</div>`,
+        true
+      );
     } finally {
       form.dataset.submitting = '0';
       if (btn) {
@@ -160,36 +196,6 @@ window.PharmaRewardsCatalogue = (() => {
       }
     }
   }
-
-  document.addEventListener('submit', function (event) {
-    const form = event.target;
-    if (!(form instanceof HTMLFormElement)) return;
-    const isClaimForm =
-      form.matches('#giftClaimForm, #claimGiftForm, .gift-claim-form, [data-claim-form]') ||
-      Boolean(findFormField(form, ['ledger_name', 'party_code', 'contact_no', 'selected_gift']));
-
-    if (isClaimForm) {
-      event.preventDefault();
-      submitClaim(form);
-    }
-  });
-
-  document.addEventListener('click', function (event) {
-    const btn = event.target.closest('button, [role="button"], input[type="submit"]');
-    if (!btn) return;
-
-    const text = String(btn.textContent || btn.value || '').trim().toLowerCase();
-    if (btn.matches('.claim-submit-btn, [data-submit-claim]') || text.includes('submit claim')) {
-      const form =
-        btn.closest('form') ||
-        document.querySelector('#giftClaimForm, #claimGiftForm, .gift-claim-form, [data-claim-form]');
-      if (form) {
-        event.preventDefault();
-        submitClaim(form);
-      }
-    }
-  });
-})();
 
   function getCardTierLabel(pts) {
     const n = Number(pts) || 0;
@@ -259,10 +265,10 @@ window.PharmaRewardsCatalogue = (() => {
     if (state.loaded) return;
 
     const apiCandidates = [
-        'api/gifts.php',
-        '../api/gifts.php',
-        '/api/gifts.php',
-        '/PHARMA-FLOW/api/gifts.php',
+      'api/gifts.php',
+      '../api/gifts.php',
+      '/api/gifts.php',
+      '/PHARMA-FLOW/api/gifts.php',
     ];
 
     for (const url of apiCandidates) {
@@ -323,15 +329,15 @@ window.PharmaRewardsCatalogue = (() => {
     });
   }
 
-    function buildClaimUrl(gift) {
-        const q = new URLSearchParams({
-            gift: String(gift.name || ''),
-            points: String(Number(gift.points || 0)),
-        });
-        const basePath = window.location.pathname.includes('/gifts')
-          ? window.location.pathname.replace(/\/gifts\/?$/, '/claim-gift')
-          : '/PHARMA-FLOW/public/claim-gift';
-        return `${basePath}?${q.toString()}`;
+  function buildClaimUrl(gift) {
+    const q = new URLSearchParams({
+      gift: String(gift.name || ''),
+      points: String(Number(gift.points || 0)),
+    });
+    const basePath = window.location.pathname.includes('/gifts')
+      ? window.location.pathname.replace(/\/gifts\/?$/, '/claim-gift')
+      : '/PHARMA-FLOW/public/claim-gift';
+    return `${basePath}?${q.toString()}`;
   }
 
   function getSavedTermsHtml() {
@@ -344,10 +350,7 @@ window.PharmaRewardsCatalogue = (() => {
 
   function renderTopBarAndCartDrawer() {
     const cartCount = state.cartGift ? 1 : 0;
-    const announcementHtml = state.announcementVisible
-      ? `
-      `
-      : '';
+    const announcementHtml = state.announcementVisible ? '' : '';
 
     const disclaimersHtml = `
       <div class="rc-disclaimers">
@@ -638,7 +641,7 @@ window.PharmaRewardsCatalogue = (() => {
     `;
   }
 
-function renderClaimView(container) {
+  function renderClaimView(container) {
     const searchParams = new URLSearchParams(window.location.search || '');
     const hash = window.location.hash || '';
     const hashParams = new URLSearchParams(hash.includes('?') ? hash.split('?')[1] : '');
@@ -673,56 +676,28 @@ function renderClaimView(container) {
               <label class="form-label fw-semibold small" style="color: #0f172a;">
                 Ledger Name <span style="color: #dc2626;">*</span>
               </label>
-              <input
-                type="text"
-                class="form-control py-2"
-                name="ledger_name"
-                placeholder="Ledger Name"
-                style="border-color: #cbd5e1;"
-                required
-              >
+              <input type="text" class="form-control py-2" name="ledger_name" placeholder="Ledger Name" style="border-color: #cbd5e1;" required>
             </div>
 
             <div class="mb-3">
               <label class="form-label fw-semibold small" style="color: #0f172a;">
                 Party code <span style="color: #dc2626;">*</span>
               </label>
-              <input
-                type="text"
-                class="form-control py-2"
-                name="party_code"
-                placeholder="Party code"
-                style="border-color: #cbd5e1;"
-                required
-              >
+              <input type="text" class="form-control py-2" name="party_code" placeholder="Party code" style="border-color: #cbd5e1;" required>
             </div>
 
             <div class="mb-3">
               <label class="form-label fw-semibold small" style="color: #0f172a;">
                 Contact no <span style="color: #dc2626;">*</span>
               </label>
-              <input
-                type="tel"
-                class="form-control py-2"
-                name="contact_no"
-                placeholder="Contact no"
-                style="border-color: #cbd5e1;"
-                required
-              >
+              <input type="tel" class="form-control py-2" name="contact_no" placeholder="Contact no" style="border-color: #cbd5e1;" required>
             </div>
 
             <div class="mb-3">
               <label class="form-label fw-semibold small" style="color: #0f172a;">
                 Address <span style="color: #dc2626;">*</span>
               </label>
-              <textarea
-                class="form-control py-2"
-                name="address"
-                rows="4"
-                placeholder="Address"
-                style="border-color: #cbd5e1;"
-                required
-              ></textarea>
+              <textarea class="form-control py-2" name="address" rows="4" placeholder="Address" style="border-color: #cbd5e1;" required></textarea>
             </div>
 
             <div class="mb-4">
@@ -745,7 +720,7 @@ function renderClaimView(container) {
 
             <button
               type="submit"
-              class="btn px-4 py-2 fw-bold text-white"
+              class="btn px-4 py-2 fw-bold text-white claim-submit-btn"
               style="background-color: #0f4c81; border-color: #0f4c81; border-radius: 8px;"
             >
               Submit claim request
@@ -775,7 +750,7 @@ function renderClaimView(container) {
         </div>
         <div class="card border-0 shadow-sm rounded-3 p-4">
           <h1 class="h4 fw-bold text-dark mb-3">Scheme Terms</h1>
-          <div id="rcTermsEditor" class="small text-body" contenteditable="${state.editingTerms ? 'true' : 'false'}" style="${state.editingTerms ? 'outline: 2px dashed #0f4c81; padding: 12px; border-radius: 8px;' : ''}">
+          <div id="rcTermsEditor" class="small text-body" contenteditable="${state.editingTerms ? 'true' : 'false'}" style="${state.editingTerms ? 'outline: 2px dashed #0f4c81; padding: 10px; border-radius: 8px;' : ''}">
             ${getSavedTermsHtml()}
           </div>
         </div>
@@ -784,161 +759,171 @@ function renderClaimView(container) {
     `;
   }
 
-  async function mount(container, options = {}) {
+  function bindGlobalHandlers() {
+    if (window.__farlexRewardsBound) return;
+    window.__farlexRewardsBound = true;
+
+    document.addEventListener('submit', function (event) {
+      const form = event.target;
+      if (!(form instanceof HTMLFormElement)) return;
+      if (form.id === 'rcClaimForm' || form.matches('#giftClaimForm, #claimGiftForm, .gift-claim-form, [data-claim-form]')) {
+        event.preventDefault();
+        submitClaimForm(form);
+      }
+    });
+
+    document.addEventListener('click', function (event) {
+      const btn = event.target.closest('button, [role="button"], input[type="submit"]');
+      if (!btn) return;
+      const label = String(btn.textContent || btn.value || '').trim().toLowerCase();
+      if (btn.matches('.claim-submit-btn, [data-submit-claim]') || label.includes('submit claim')) {
+        const form = btn.closest('form') || document.querySelector('#rcClaimForm, #giftClaimForm, #claimGiftForm');
+        if (form) {
+          event.preventDefault();
+          submitClaimForm(form);
+        }
+      }
+    });
+  }
+
+  function bindContainerEvents(container) {
     if (!container) return;
-    await ensureGiftsLoaded();
-    syncStateFromUrl();
 
-    const view = options.view || 'catalogue';
-    if (view === 'detail') renderDetailView(container);
-    else if (view === 'claim') renderClaimView(container);
-    else if (view === 'terms') renderTermsView(container);
-    else renderCatalogueView(container);
-
-    container.onclick = async (e) => {
-      if (e.target.closest('[data-rc-close-announcement]')) {
-        state.announcementVisible = false;
-        mount(container, options);
-        return;
-      }
-      if (e.target.closest('[data-rc-open-drawer]')) {
-        state.drawerOpen = true;
-        mount(container, options);
-        return;
-      }
-      if (e.target.closest('[data-rc-close-drawer]')) {
-        state.drawerOpen = false;
-        mount(container, options);
-        return;
-      }
-      if (e.target.closest('[data-rc-clear-cart]')) {
-        state.cartGift = null;
-        mount(container, options);
-        return;
-      }
-
-      const catBtn = e.target.closest('[data-rc-cat]');
-      if (catBtn) {
-        state.category = catBtn.dataset.rcCat || '';
+    container.querySelectorAll('[data-rc-cat]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        state.category = btn.getAttribute('data-rc-cat') || '';
         state.page = 1;
         syncUrlFromState();
-        mount(container, options);
-        return;
-      }
+        renderCatalogueView(container);
+        bindContainerEvents(container);
+      });
+    });
 
-      const underBtn = e.target.closest('[data-rc-under]');
-      if (underBtn) {
-        const val = underBtn.dataset.rcUnder;
+    container.querySelectorAll('[data-rc-under]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const val = btn.getAttribute('data-rc-under');
         state.maxPoints = val ? Number(val) : null;
         state.page = 1;
         syncUrlFromState();
-        mount(container, options);
-        return;
-      }
+        renderCatalogueView(container);
+        bindContainerEvents(container);
+      });
+    });
 
-      const tierInput = e.target.closest('[data-rc-point-tier]');
-      if (tierInput) {
-        const checkedVals = Array.from(container.querySelectorAll('[data-rc-point-tier]:checked')).map((el) => Number(el.value));
-        state.selectedPoints = checkedVals;
+    container.querySelectorAll('[data-rc-point-tier]').forEach((cb) => {
+      cb.addEventListener('change', () => {
+        const tier = Number(cb.value);
+        if (cb.checked) {
+          if (!state.selectedPoints.includes(tier)) state.selectedPoints.push(tier);
+        } else {
+          state.selectedPoints = state.selectedPoints.filter((n) => n !== tier);
+        }
         state.page = 1;
         syncUrlFromState();
-        mount(container, options);
-        return;
-      }
+        renderCatalogueView(container);
+        bindContainerEvents(container);
+      });
+    });
 
-      const pageBtn = e.target.closest('[data-rc-page]');
-      if (pageBtn && !pageBtn.disabled) {
-        state.page = Number(pageBtn.dataset.rcPage) || 1;
-        syncUrlFromState();
-        mount(container, options);
-        return;
-      }
-
-      const pickGiftLink = e.target.closest('[data-rc-pick-gift]');
-      if (pickGiftLink) {
-        const gId = pickGiftLink.dataset.rcPickGift;
-        const found = state.gifts.find((g) => String(g.id) === String(gId));
-        if (found) state.cartGift = found;
-      }
-
-      if (e.target.closest('[data-rc-edit-terms]')) {
-        const editor = container.querySelector('#rcTermsEditor');
-        if (state.editingTerms && editor) {
-          try {
-            localStorage.setItem(TERMS_STORAGE_KEY, editor.innerHTML);
-          } catch (_) {}
-          state.editingTerms = false;
-        } else {
-          state.editingTerms = true;
-        }
-        mount(container, options);
-        return;
-      }
-
-      if (e.target.closest('[data-rc-reset-terms]')) {
-        try {
-          localStorage.removeItem(TERMS_STORAGE_KEY);
-        } catch (_) {}
-        state.editingTerms = false;
-        mount(container, options);
-      }
-    };
-
-    let searchTimer = null;
-    container.oninput = (e) => {
-      const searchInp = e.target.closest('[data-rc-search]');
-      if (!searchInp) return;
-      clearTimeout(searchTimer);
-      state.searchQuery = searchInp.value;
-      state.page = 1;
-      searchTimer = setTimeout(() => {
-        mount(container, options);
-      }, 180);
-    };
-
-    const claimForm = container.querySelector('#rcClaimForm');
-    if (claimForm) {
-      claimForm.onsubmit = async (e) => {
-        e.preventDefault();
-        const resultBox = container.querySelector('#rcClaimResult');
-        const fd = new FormData(claimForm);
-        const partnerName = String(fd.get('partner_name') || '').trim();
-        const partnerCode = String(fd.get('partner_code') || '').trim();
-        const phone = String(fd.get('phone') || '').trim();
-        const email = String(fd.get('email') || '').trim();
-        const address = String(fd.get('address') || '').trim();
-        const city = String(fd.get('city') || '').trim();
-        const stateName = String(fd.get('state') || '').trim();
-        const pin = String(fd.get('pin_code') || '').trim();
-        const consent = fd.get('consent');
-
-        if (!partnerName || !partnerCode || !phone || !email || !address || !city || !stateName || !/^\d{6}$/.test(pin) || !consent) {
-          if (resultBox) {
-            resultBox.innerHTML = `<div class="alert alert-danger small mb-0">Please fill all required fields and enter a valid 6-digit PIN code.</div>`;
-          }
-          return;
-        }
-
-        const payload = Object.fromEntries(fd.entries());
-        try {
-          await fetch('api/gift_claims.php', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload),
-          });
-        } catch (_) {}
-
-        if (resultBox) {
-          resultBox.innerHTML = `
-            <div class="alert alert-success mb-0">
-              <strong>Claim Submitted!</strong> Gift card <strong>${escapeHtml(payload.gift)}</strong> for partner <strong>${escapeHtml(partnerName)}</strong> (${escapeHtml(partnerCode)}) has been recorded for verification.
-            </div>
-          `;
-        }
-        claimForm.reset();
-      };
+    const searchInput = container.querySelector('[data-rc-search]');
+    if (searchInput) {
+      searchInput.addEventListener('input', () => {
+        state.searchQuery = searchInput.value || '';
+        state.page = 1;
+        renderCatalogueView(container);
+        bindContainerEvents(container);
+      });
     }
+
+    container.querySelectorAll('[data-rc-page]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        state.page = Number(btn.getAttribute('data-rc-page')) || 1;
+        syncUrlFromState();
+        renderCatalogueView(container);
+        bindContainerEvents(container);
+      });
+    });
+
+    container.querySelectorAll('[data-rc-pick-gift]').forEach((link) => {
+      link.addEventListener('click', () => {
+        const gid = link.getAttribute('data-rc-pick-gift');
+        const found = state.gifts.find((g) => String(g.id) === String(gid));
+        if (found) state.cartGift = found;
+      });
+    });
+
+    container.querySelector('[data-rc-open-drawer]')?.addEventListener('click', () => {
+      state.drawerOpen = true;
+      renderCatalogueView(container);
+      bindContainerEvents(container);
+    });
+
+    container.querySelector('[data-rc-close-drawer]')?.addEventListener('click', () => {
+      state.drawerOpen = false;
+      renderCatalogueView(container);
+      bindContainerEvents(container);
+    });
+
+    container.querySelector('[data-rc-clear-cart]')?.addEventListener('click', () => {
+      state.cartGift = null;
+      renderCatalogueView(container);
+      bindContainerEvents(container);
+    });
+
+    container.querySelector('[data-rc-edit-terms]')?.addEventListener('click', () => {
+      const editor = container.querySelector('#rcTermsEditor');
+      if (state.editingTerms && editor) {
+        try {
+          localStorage.setItem(TERMS_STORAGE_KEY, editor.innerHTML);
+        } catch (_) {}
+      }
+      state.editingTerms = !state.editingTerms;
+      renderTermsView(container);
+      bindContainerEvents(container);
+    });
+
+    container.querySelector('[data-rc-reset-terms]')?.addEventListener('click', () => {
+      try {
+        localStorage.removeItem(TERMS_STORAGE_KEY);
+      } catch (_) {}
+      state.editingTerms = false;
+      renderTermsView(container);
+      bindContainerEvents(container);
+    });
   }
 
-  return { mount };
+  async function render(targetSelectorOrEl) {
+    bindGlobalHandlers();
+    if (!isGiftCatalogueContext()) return;
+
+    const container =
+      typeof targetSelectorOrEl === 'string'
+        ? document.querySelector(targetSelectorOrEl)
+        : targetSelectorOrEl;
+    if (!container) return;
+
+    syncStateFromUrl();
+    await ensureGiftsLoaded();
+
+    const hash = (window.location.hash || '').toLowerCase();
+    const path = (window.location.pathname || '').toLowerCase();
+
+    if (hash.startsWith('#/claim-gift') || path.endsWith('/claim-gift')) {
+      renderClaimView(container);
+    } else if (hash.startsWith('#/scheme-terms')) {
+      renderTermsView(container);
+    } else if (hash.startsWith('#/gift')) {
+      renderDetailView(container);
+    } else {
+      renderCatalogueView(container);
+    }
+
+    bindContainerEvents(container);
+  }
+
+  async function mount(targetSelectorOrEl) {
+    return render(targetSelectorOrEl);
+  }
+
+  return { render, mount, init: mount, state };
 })();
