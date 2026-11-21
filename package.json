@@ -4,7 +4,8 @@
   "description": "PharmaFlow_Replica",
   "main": "lucide.min.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "test": "echo \"Error: no test specified\" && exit 1",
+  "build": "npx @tailwindcss/cli -i ./public/assets/css/input.css -o ./public/assets/css/app.css --minify"
   },
   "repository": {
     "type": "git",
