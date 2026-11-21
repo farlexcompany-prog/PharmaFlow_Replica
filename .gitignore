@@ -14,3 +14,4 @@ Thumbs.db
 *.jpg binary
 *.jpeg binary
 *.webp binary
+.env

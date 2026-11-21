@@ -56,8 +56,8 @@ window.PharmaRouter = (() => {
         firstDiv.remove();
       }
       bodyClone.querySelectorAll('header').forEach((node) => node.remove());
-      // Remove fixed floating side buttons inside home.html so they don't overlap PharmaFlow shell
-      bodyClone.querySelectorAll('.fixed').forEach((fixedEl) => fixedEl.remove());
+      // Keep the floating contact and chatbot controls visible on the homepage.
+      bodyClone.querySelectorAll('.fixed:not(#farlexFloatingGroup)').forEach((fixedEl) => fixedEl.remove());
 
       el.innerHTML = `
         <div class="farlex-home-merged bg-white rounded-4 border p-3 p-md-4">

@@ -1,0 +1,25 @@
+{
+  "name": "pharma-flow",
+  "version": "1.0.0",
+  "description": "PharmaFlow_Replica",
+  "main": "lucide.min.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/farlexcompany-prog/PharmaFlow_Replica.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/farlexcompany-prog/PharmaFlow_Replica/issues"
+  },
+  "homepage": "https://github.com/farlexcompany-prog/PharmaFlow_Replica#readme",
+  "dependencies": {
+    "@tailwindcss/vite": "^4.3.5",
+    "tailwindcss": "^4.3.5"
+  }
+}
