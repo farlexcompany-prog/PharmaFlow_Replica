@@ -98,9 +98,7 @@ declare(strict_types=1);
           <a href="#/login/employee" class="pf-nav-link" data-route="/login/employee">
             <i class="bi bi-briefcase"></i><span>Employee Login</span>
           </a>
-          <a href="#/login/store" class="pf-nav-link" data-route="/login/store">
-            <i class="bi bi-shop"></i><span>Store Login</span>
-          </a>
+          
           <a href="#/contact" class="pf-nav-link" data-route="/contact">
             <i class="bi bi-envelope"></i><span>Contact Us</span>
           </a>
