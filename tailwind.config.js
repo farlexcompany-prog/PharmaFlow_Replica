@@ -4,6 +4,7 @@ module.exports = {
   "./public/**/*.html",
   "./public/assets/js/**/*.js",
 ],
+
   theme: {
     extend: {
       fontFamily: {

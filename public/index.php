@@ -12,6 +12,7 @@ declare(strict_types=1);
   <link rel="stylesheet" href="assets/vendor/bootstrap/css/bootstrap.min.css">
   <link rel="stylesheet" href="assets/vendor/icons/bootstrap-icons.min.css">
   <link rel="stylesheet" href="assets/css/app.css">
+  <link rel="stylesheet" href="assets/css/app-shell.css">
   <link rel="stylesheet" href="assets/css/custom-reminder-cards.css">
   <link rel="stylesheet" href="assets/css/rewards_catalogue.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
